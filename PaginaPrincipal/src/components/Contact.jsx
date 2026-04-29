@@ -1,82 +1,86 @@
 import { useState } from 'react';
 
 const Contact = () => {
-  // Estado opcional para manejar el hover del botón si deseas efectos JS
-  const [isHovered, setIsHovered] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
+
+  const inputStyle = (fieldName) => ({
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderLeft: focusedField === fieldName 
+      ? '4px solid #00d4ff' 
+      : '4px solid rgba(255, 255, 255, 0.1)',
+    color: 'white',
+    transition: 'all 0.4s ease',
+    padding: '16px 20px',
+    fontSize: '0.95rem'
+  });
 
   return (
-    <section id="contacto" className="py-5" style={{
-      // Degradado que continúa la estética de la sección de Planes
-      background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)',
-      color: 'white'
-    }}>
+    <section id="contacto" className="py-5" style={{ background: '#020617' }}>
       <div className="container py-5">
-        <div className="row justify-content-center">
-          {/* Encabezado de la sección */}
-          <div className="col-md-6 text-center mb-5" data-aos="fade-up">
-            <h2 className="display-4 fw-bold">Contáctanos</h2>
-            <p className="opacity-75 fs-5">¿Listo para transformar tu comunidad? Déjanos un mensaje.</p>
+        <div className="row g-5 align-items-center">
+          
+          <div className="col-lg-5 text-start" data-aos="fade-right">
+            <h6 className="text-info fw-bold tracking-widest mb-3" style={{ letterSpacing: '3px' }}>CONTACTO VIP</h6>
+            <h2 className="display-4 fw-bold text-white mb-4">Hablemos de tu próximo <span className="text-info">gran proyecto.</span></h2>
+            <p className="text-white-50 mb-5">
+              Nuestro equipo de expertos está listo para diseñar una solución a la medida de tu condominio.
+            </p>
           </div>
 
-          {/* Formulario */}
-          <div className="col-md-8" data-aos="zoom-in">
-            <form 
-              className="row g-3 p-4 p-md-5 rounded-4 shadow-lg"
-              style={{
-                // Fondo blanco con ligera transparencia para un toque moderno
-                backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                color: '#0f172a',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <div className="col-md-6">
-                <label className="form-label fw-bold small text-uppercase">Nombre</label>
-                <input 
-                  type="text" 
-                  className="form-control border-0 bg-light py-3 rounded-3" 
-                  placeholder="Tu nombre completo"
-                  style={{ borderBottom: '2px solid #e2e8f0 !important' }}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label fw-bold small text-uppercase">Email</label>
-                <input 
-                  type="email" 
-                  className="form-control border-0 bg-light py-3 rounded-3" 
-                  placeholder="correo@ejemplo.com" 
-                />
-              </div>
-
-              <div className="col-12">
-                <label className="form-label fw-bold small text-uppercase">Mensaje</label>
-                <textarea 
-                  className="form-control border-0 bg-light py-3 rounded-3" 
-                  rows="4" 
-                  placeholder="Escribe tu consulta aquí..."
-                ></textarea>
-              </div>
-
-              <div className="col-12 text-center mt-4">
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  style={{
-                    // Azul corporativo que definimos en el CSS
-                    backgroundColor: '#0056b3',
-                    borderColor: '#0056b3',
-                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                    transform: isHovered ? 'scale(1.05) translateY(-3px)' : 'scale(1)',
-                    boxShadow: isHovered ? '0 10px 20px rgba(0, 86, 179, 0.3)' : '0 4px 6px rgba(0,0,0,0.1)'
-                  }}
-                >
-                  Enviar Mensaje <i className="bi bi-send-fill ms-2"></i>
-                </button>
-              </div>
-            </form>
+          <div className="col-lg-7" data-aos="fade-left">
+            <div className="p-4 p-md-5 rounded-5" style={{
+              background: 'rgba(15, 23, 42, 0.4)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+            }}>
+              <form className="row g-4">
+                <div className="col-md-6 text-start">
+                  <label className="text-white-50 small fw-bold mb-2 text-uppercase">Nombre Completo</label>
+                  <input 
+                    type="text" 
+                    className="form-control text-white shadow-none" 
+                    placeholder="Ej. Juan Pérez"
+                    style={inputStyle('nombre')}
+                    onFocus={() => setFocusedField('nombre')}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </div>
+                <div className="col-md-6 text-start">
+                  <label className="text-white-50 small fw-bold mb-2 text-uppercase">Correo Corporativo</label>
+                  <input 
+                    type="email" 
+                    className="form-control text-white shadow-none" 
+                    placeholder="juan@empresa.com"
+                    style={inputStyle('email')}
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </div>
+                <div className="col-12 text-start">
+                  <label className="text-white-50 small fw-bold mb-2 text-uppercase">Mensaje</label>
+                  <textarea 
+                    className="form-control text-white shadow-none" 
+                    rows="4" 
+                    placeholder="Cuéntanos sobre tu condominio..."
+                    style={inputStyle('mensaje')}
+                    onFocus={() => setFocusedField('mensaje')}
+                    onBlur={() => setFocusedField(null)}
+                  ></textarea>
+                </div>
+                
+                {/* BOTÓN SOFISTICADO ACTUALIZADO */}
+                <div className="col-12 text-end mt-4">
+                  <button type="submit" className="btn-elite-minimal border-0 shadow-none">
+                    ENVIAR MENSAJE 
+                    <i className="bi bi-send ms-2"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
+
         </div>
       </div>
     </section>
