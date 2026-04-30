@@ -13,7 +13,7 @@ const Footer = () => {
                    style={{ width: '35px', height: '35px', fontWeight: 'bold' }}>
                 CH
               </div>
-              <span className="fs-4 fw-bold text-white">CondoHub</span>
+              <span className="fs-4 fw-bold text-white">Oasis</span>
             </div>
             <p className="text-white-50 pe-lg-5">
               Elevando el estándar de la gestión residencial a través de tecnología inteligente y diseño de vanguardia.
@@ -52,7 +52,7 @@ const Footer = () => {
             <h6 className="text-white fw-bold mb-4">Soporte VIP</h6>
             <div className="text-white-50">
               <p className="mb-2 d-flex align-items-center gap-2">
-                <i className="bi bi-envelope-at text-info"></i> help@condohub.com
+                <i className="bi bi-envelope-at text-info"></i> help@oasis.com
               </p>
               <p className="mb-2 d-flex align-items-center gap-2">
                 <i className="bi bi-telephone text-info"></i> +51 999 888 777
@@ -69,7 +69,7 @@ const Footer = () => {
 
         <div className="row align-items-center">
           <div className="col-md-6 text-center text-md-start">
-            <small className="text-white-50">© {currentYear} CondoHub. Todos los derechos reservados.</small>
+            <small className="text-white-50">© {currentYear}Oasis. Todos los derechos reservados.</small>
           </div>
           <div className="col-md-6 text-center text-md-end mt-3 mt-md-0">
             <a href="#" className="text-white-50 text-decoration-none small mx-3 hover-cyan">Privacidad</a>

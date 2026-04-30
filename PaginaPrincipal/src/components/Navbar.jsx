@@ -25,9 +25,9 @@ const Navbar = () => {
            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
           <div className="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" 
                style={{ width: '40px', height: '40px' }}>
-            <span style={{ fontSize: '0.8rem' }}>CH</span>
+            <span style={{ fontSize: '0.8rem' }}>/</span>
           </div>
-          CondoHub
+          OASIS
         </a>
 
         {/* BOTÓN HAMBURGUESA (Solo visible en móvil) */}

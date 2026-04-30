@@ -86,7 +86,7 @@ const Hero = () => {
 
         {/* Footer del Hero */}
         <div className="mt-4 pb-4 opacity-50" data-aos="fade-up">
-            <h3 className="fw-light fs-5">¿Por qué CondoHub?</h3>
+            <h3 className="fw-light fs-5">¿Por qué Oasis?</h3>
             <div className="d-flex justify-content-center gap-4 mt-3 flex-wrap small">
               <span>• Monitoreo real</span>
               <span>• Acceso Seguro</span>
