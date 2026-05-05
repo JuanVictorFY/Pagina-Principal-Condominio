@@ -1,22 +1,36 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navLinkStyle = {
     transition: 'all 0.3s ease',
     cursor: 'pointer'
   };
 
+  // Cierra el menú móvil automáticamente al cambiar de vista
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsMenuOpen(false);
+  }, [location]);
+
   const navItems = [
     { name: 'Inicio', link: '/' },
+    { name: 'Servicios', link: '/#servicios' },
+    { name: 'Demo', link: '/#dashboard-preview' },
     { name: 'Módulos', link: '/#features' },
-    { name: 'Planes', link: '/#planes' },
+    { name: 'App', link: '/#app-promo' },
+    { name: 'Integraciones', link: '/#integrations' },
     { name: 'Nosotros', link: '/#about' },
+    { name: 'Testimonios', link: '/#testimonios' }, // Nuevo enlace para testimonios
+    { name: 'Proceso', link: '/#how-it-works' },    // Nuevo enlace para el proceso de onboarding
+    { name: 'Planes', link: '/#planes' },
     { name: 'FAQ', link: '/#faq' }
+    , { name: 'Contacto', link: '/#contacto' }      // Nuevo enlace para el contacto
   ];
 
   return (
@@ -48,25 +62,30 @@ const Navbar = () => {
         </button>
 
         {/* Contenido Colapsable */}
-        <div className={`collapse navbar-collapse justify-content-center ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
-          <ul className="navbar-nav gap-lg-3 text-center my-3 my-lg-0">
-            {navItems.map((item) => (
-              <li className="nav-item" key={item.name}>
-                <Link 
-                  className="nav-link text-white opacity-75 fw-medium custom-nav-link" 
-                  to={item.link} 
-                  style={navLinkStyle}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
+          <ul className="navbar-nav gap-lg-2 text-center my-3 my-lg-0 me-auto"> {/* 'me-auto' para empujar los botones de acción a la derecha */}
+            {navItems.map((item) => {
+              const isActive = item.link.includes('#') 
+                ? location.hash === item.link.substring(item.link.indexOf('#'))
+                : location.pathname === item.link && !location.hash;
+              return (
+                <li className="nav-item" key={item.name}>
+                  <Link 
+                    className={`nav-link fw-medium custom-nav-link px-2 ${isActive ? 'text-info opacity-100' : 'text-white opacity-75'}`} 
+                    to={item.link} 
+                    style={navLinkStyle}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           {/* Botones de Acción dentro del colapso para móvil */}
-          <div className="d-lg-none d-flex flex-column align-items-center gap-3 pt-3 pb-2 border-top border-secondary border-opacity-25 w-100">
-             <a href="/#contacto" className="text-info text-decoration-none fw-semibold" onClick={() => setIsMenuOpen(false)}>Empezar</a>
+          <div className="d-lg-none d-flex flex-column align-items-center gap-3 pt-3 pb-2 border-top border-secondary border-opacity-25 w-100 mt-3"> {/* Agregado mt-3 para separación en móvil */}
+             <Link to="/login" className="text-info text-decoration-none fw-semibold" onClick={() => setIsMenuOpen(false)}>Registrar</Link>
              <button 
                 className="btn btn-light rounded-pill px-4 py-2 fw-bold w-100 shadow-lg"
                 onClick={() => { navigate('/login'); setIsMenuOpen(false); }}
@@ -76,9 +95,9 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Botones de Acción (Solo visibles en escritorio) */}
-        <div className="d-none d-lg-flex align-items-center gap-4">
-          <a href="/#contacto" className="text-white text-decoration-none small fw-semibold opacity-75" 
+        {/* Botones de Acción (Solo visibles en escritorio y ahora dentro del colapso) */}
+        <div className="d-none d-lg-flex align-items-center gap-4 ms-auto"> {/* ms-auto aquí también para asegurar alineación */}
+          <Link to="/login" className="text-white text-decoration-none small fw-semibold opacity-75" 
              style={navLinkStyle}
              onMouseOver={(e) => {
                e.target.style.opacity = '1'; 
@@ -87,9 +106,7 @@ const Navbar = () => {
              onMouseOut={(e) => {
                e.target.style.opacity = '0.75'; 
                e.target.style.transform = 'translateY(0)';
-             }}>
-            Empezar
-          </a>
+             }}>Registrar</Link>
           
           <button 
             className="btn rounded-pill px-4 py-2 fw-bold"
