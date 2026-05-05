@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const navigate = useNavigate();
 
   const plans = [
     { 
@@ -93,7 +95,7 @@ const Pricing = () => {
                       backgroundColor: plan.popular ? '#0056b3' : 'transparent',
                       borderColor: plan.popular ? 'transparent' : 'rgba(255,255,255,0.5)',
                     }}
-                  onClick={() => window.location.href = '/#contacto'}
+                  onClick={() => navigate('/#contacto')}
                   >
                     Seleccionar Plan
                   </button>
