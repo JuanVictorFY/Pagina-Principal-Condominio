@@ -1123,67 +1123,237 @@ const ResidenteDashboard = ({ activeTab, onOpenModal }) => {
   }
 };
 
-const SeguridadMonitor = ({ onOpenModal, accesos, setAccesos, panicoActivo, setPanicoActivo }) => (
-  <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
-    <div className="col-12 mb-2">
-      <div className={`alert ${panicoActivo ? 'alert-danger' : 'alert-dark'} bg-transparent ${panicoActivo ? 'border-danger text-danger' : 'border-secondary text-white-50'} d-flex flex-column flex-md-row align-items-center rounded-4 p-4 shadow-lg text-center text-md-start`} style={{ transition: 'all 0.3s ease', animation: panicoActivo ? 'pulse-blue 1.5s infinite' : 'none' }}>
-        <i className={`bi ${panicoActivo ? 'bi-shield-fill-exclamation' : 'bi-shield-check'} fs-1 me-md-4 mb-3 mb-md-0`}></i>
-        <div className="flex-grow-1 mb-3 mb-md-0">
-          <h5 className="fw-bold mb-1">{panicoActivo ? '¡ALERTA DE PÁNICO ACTIVADA!' : 'Sistema Operativo y Seguro'}</h5>
-          <span className="small">{panicoActivo ? 'La policía y administración han sido notificadas.' : 'Usa esta función únicamente en caso de emergencia real.'}</span>
-        </div>
-        <button className={`btn ${panicoActivo ? 'btn-outline-danger' : 'btn-danger'} rounded-pill px-4 py-2 fw-bold shadow`} onClick={() => setPanicoActivo(!panicoActivo)}>
-          {panicoActivo ? 'DESACTIVAR ALARMA' : 'ACTIVAR PÁNICO'}
-        </button>
-      </div>
-    </div>
-    
-    <div className="col-lg-6">
-      <h5 className="text-white mb-3">Monitoreo de Cámaras (En Vivo)</h5>
-      <div className="service-card-elite p-2 position-relative">
-        <div className="position-absolute top-0 start-0 m-4 badge bg-danger rounded-pill" style={{ zIndex: 10, animation: 'pulse-blue 2s infinite' }}>EN VIVO</div>
-        <img src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?q=80&w=800" alt="Cámara" className="img-fluid rounded-4 w-100" style={{ height: '250px', objectFit: 'cover', filter: 'grayscale(30%) contrast(120%)' }} />
-        <div className="mt-3 px-3 d-flex justify-content-between align-items-center pb-2">
-          <span className="text-white fw-bold">Cam 01: Ingreso Principal</span>
-          <span className="text-info"><i className="bi bi-record-circle"></i> Grabando</span>
-        </div>
-      </div>
-    </div>
-
-    <div className="col-lg-6">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="text-white mb-0">Registro de Accesos</h5>
-        <button className="btn btn-sm btn-premium-unique rounded-pill text-white px-3 fw-bold shadow-lg" onClick={() => onOpenModal('Registrar Acceso', 'form-acceso', null, (nuevo) => setAccesos([nuevo, ...accesos]))}>
-          <i className="bi bi-plus-circle me-1"></i> Nuevo Ingreso
-        </button>
-      </div>
-      <div className="service-card-elite p-4 h-100 overflow-auto" style={{ maxHeight: '320px' }}>
-        {accesos.map(acc => (
-          <div className="d-flex align-items-center mb-4 border-bottom border-secondary border-opacity-25 pb-3" key={acc.id}>
-            <i className={`bi ${acc.icon} text-${acc.color} fs-3 me-3`}></i>
-            <div className="flex-grow-1">
-              <strong className="text-white d-block">{acc.name}</strong>
-              <small className="text-white-50">{acc.action} • {acc.time}</small>
-            </div>
-            <button className="btn btn-sm btn-link text-danger p-0 ms-2" onClick={() => onOpenModal('Eliminar Registro', 'confirm-delete', { item: acc.name }, () => setAccesos(accesos.filter(a => a.id !== acc.id)))}><i className="bi bi-trash fs-5"></i></button>
+const SeguridadMonitor = ({ panicoActivo, setPanicoActivo, accesos, camaras }) => {
+  const camarasActivas = camaras.filter(c => c.status === 'Grabando').length;
+  
+  return (
+    <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
+      <div className="col-12 mb-2">
+        <div className={`alert ${panicoActivo ? 'alert-danger' : 'alert-dark'} bg-transparent ${panicoActivo ? 'border-danger text-danger' : 'border-secondary text-white-50'} d-flex flex-column flex-md-row align-items-center rounded-4 p-4 shadow-lg text-center text-md-start`} style={{ transition: 'all 0.3s ease', animation: panicoActivo ? 'pulse-blue 1.5s infinite' : 'none' }}>
+          <i className={`bi ${panicoActivo ? 'bi-shield-fill-exclamation' : 'bi-shield-check'} fs-1 me-md-4 mb-3 mb-md-0`}></i>
+          <div className="flex-grow-1 mb-3 mb-md-0">
+            <h5 className="fw-bold mb-1">{panicoActivo ? '¡ALERTA DE PÁNICO ACTIVADA!' : 'Sistema Operativo y Seguro'}</h5>
+            <span className="small">{panicoActivo ? 'La policía y administración han sido notificadas.' : 'Usa esta función únicamente en caso de emergencia real.'}</span>
           </div>
-        ))}
-        {accesos.length === 0 && <p className="text-white-50 text-center mt-4">No hay accesos recientes.</p>}
+          <button className={`btn ${panicoActivo ? 'btn-outline-danger' : 'btn-danger'} rounded-pill px-4 py-2 fw-bold shadow`} onClick={() => setPanicoActivo(!panicoActivo)}>
+            {panicoActivo ? 'DESACTIVAR ALARMA' : 'ACTIVAR PÁNICO'}
+          </button>
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="service-card-elite p-4 h-100">
+          <div className="text-info mb-2"><i className="bi bi-people fs-4"></i></div>
+          <h6 className="text-white-50 text-uppercase small fw-bold">Accesos Hoy</h6>
+          <h2 className="text-white fw-bold mb-0">{accesos.length} Registros</h2>
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="service-card-elite p-4 h-100">
+          <div className="text-success mb-2"><i className="bi bi-camera-video fs-4"></i></div>
+          <h6 className="text-white-50 text-uppercase small fw-bold">Cámaras Activas</h6>
+          <h2 className="text-white fw-bold mb-0">{camarasActivas} / {camaras.length} En línea</h2>
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="service-card-elite p-4 h-100">
+          <div className="text-warning mb-2"><i className="bi bi-journal-text fs-4"></i></div>
+          <h6 className="text-white-50 text-uppercase small fw-bold">Novedades Turno</h6>
+          <h2 className="text-white fw-bold mb-0">Sin alertas</h2>
+        </div>
+      </div>
+      <div className="col-12 mt-4">
+        <h5 className="text-white mb-3">Vista Previa - Monitoreo Rápido</h5>
+        <div className="row g-4">
+          {camaras.slice(0, 2).map((c, i) => (
+            <div className="col-lg-6" key={c.id}>
+              <div className="service-card-elite p-2 position-relative h-100">
+                {c.status === 'Grabando' && <div className="position-absolute top-0 start-0 m-4 badge bg-danger rounded-pill" style={{ zIndex: 10, animation: 'pulse-blue 2s infinite' }}>EN VIVO</div>}
+                <div className="rounded-4 w-100 bg-dark d-flex align-items-center justify-content-center overflow-hidden" style={{ height: '250px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  {c.status === 'Grabando' ? (
+                    <img src={i === 0 ? "https://images.unsplash.com/photo-1557597774-9d273605dfa9?q=80&w=800" : "https://images.unsplash.com/photo-1621245051978-0c62ba384638?q=80&w=800"} alt="Cámara" className="img-fluid w-100 h-100" style={{ objectFit: 'cover', filter: 'grayscale(30%) contrast(120%)' }} />
+                  ) : (
+                    <div className="text-center text-white-50"><i className="bi bi-camera-video-off fs-1 d-block mb-2"></i><small>Señal Perdida</small></div>
+                  )}
+                </div>
+                <div className="mt-3 px-3 d-flex justify-content-between align-items-center pb-2">
+                  <span className="text-white fw-bold">{c.name}</span>
+                  <span className={`text-${c.color}`}><i className="bi bi-record-circle"></i> {c.status}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+
+const SeguridadAccesos = ({ onOpenModal, accesos, setAccesos }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const filtered = accesos.filter(a => a.name.toLowerCase().includes(searchTerm.toLowerCase()) || a.dptoPlaca?.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  return (
+    <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
+      <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3 gap-3">
+        <h5 className="text-white mb-0">Control de Accesos</h5>
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+          <div className="input-group" style={{ minWidth: '280px' }}>
+            <span className="input-group-text bg-transparent border-secondary border-opacity-25 text-white-50"><i className="bi bi-search"></i></span>
+            <input type="text" className="form-control bg-transparent border-secondary border-opacity-25 text-white shadow-none" placeholder="Buscar por nombre, placa o dpto..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
+          <button className="btn btn-premium-unique rounded-pill text-white px-4 py-2 fw-bold shadow-lg text-nowrap w-100 w-sm-auto" onClick={() => onOpenModal('Registrar Acceso', 'form-acceso', null, (nuevo) => setAccesos([nuevo, ...accesos]))}>
+            <i className="bi bi-plus-circle me-1"></i> Nuevo Ingreso
+          </button>
+        </div>
+      </div>
+      <div className="col-12">
+        <div className="service-card-elite p-0 overflow-hidden">
+          <table className="table table-dark table-hover mb-0 bg-transparent text-white-50 align-middle">
+            <thead>
+              <tr>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3 px-4">Identificación</th>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3">Tipo de Acción</th>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3">Hora de Registro</th>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3 text-end px-4">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length > 0 ? filtered.map(acc => (
+                <tr key={acc.id}>
+                  <td className="bg-transparent py-3 px-4 d-flex align-items-center">
+                    <i className={`bi ${acc.icon} text-${acc.color} fs-3 me-3`}></i>
+                    <div><span className="text-white fw-medium d-block">{acc.name}</span>{acc.dptoPlaca && <small className="text-white-50">{acc.dptoPlaca}</small>}</div>
+                  </td>
+                  <td className="bg-transparent py-3"><span className={`badge bg-${acc.color} bg-opacity-25 text-${acc.color} rounded-pill px-3`}>{acc.action}</span></td>
+                  <td className="bg-transparent py-3">{acc.time}</td>
+                  <td className="bg-transparent py-3 text-end px-4">
+                    <button className="btn btn-sm btn-outline-info rounded-pill px-3 me-2 hover-cyan" onClick={() => onOpenModal('Editar Acceso', 'form-acceso', acc, (updated) => setAccesos(accesos.map(a => a.id === acc.id ? updated : a)))}><i className="bi bi-pencil-square"></i></button>
+                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onOpenModal('Eliminar Registro', 'confirm-delete', { item: acc.name }, () => setAccesos(accesos.filter(a => a.id !== acc.id)))}><i className="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              )) : <tr><td colSpan="4" className="bg-transparent py-5 text-center text-white-50"><i className="bi bi-search fs-1 d-block mb-3 opacity-50"></i>No se encontraron accesos.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SeguridadCamaras = ({ onOpenModal, camaras, setCamaras }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const filtered = camaras.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  return (
+    <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
+      <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3 gap-3">
+        <h5 className="text-white mb-0">Cámaras (CCTV)</h5>
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+          <div className="input-group" style={{ minWidth: '280px' }}>
+            <span className="input-group-text bg-transparent border-secondary border-opacity-25 text-white-50"><i className="bi bi-search"></i></span>
+            <input type="text" className="form-control bg-transparent border-secondary border-opacity-25 text-white shadow-none" placeholder="Buscar cámara..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
+          <button className="btn btn-premium-unique rounded-pill text-white px-4 py-2 fw-bold shadow-lg text-nowrap w-100 w-sm-auto" onClick={() => onOpenModal('Añadir Cámara', 'form-camara', null, (nueva) => setCamaras([...camaras, nueva]))}>
+            <i className="bi bi-camera-video me-1"></i> Nueva Cámara
+          </button>
+        </div>
+      </div>
+      {filtered.length > 0 ? filtered.map((c) => (
+        <div className="col-xl-4 col-md-6" key={c.id}>
+          <div className="service-card-elite p-4 h-100 d-flex flex-column">
+            <div className="d-flex justify-content-between align-items-start mb-3">
+              <div className={`d-flex align-items-center justify-content-center rounded-3 bg-${c.color} bg-opacity-25 text-${c.color} me-3 shadow-sm`} style={{ width: '50px', height: '50px' }}><i className={`bi ${c.status === 'Grabando' ? 'bi-camera-video' : 'bi-camera-video-off'} fs-4`}></i></div>
+              <span className={`badge bg-${c.color} bg-opacity-25 text-${c.color} border border-${c.color} border-opacity-50 rounded-pill px-3`}>{c.status}</span>
+            </div>
+            <h5 className="text-white fw-bold mb-1">{c.name}</h5>
+            <p className="text-white-50 small mb-4"><i className="bi bi-geo-alt me-1"></i> {c.location}</p>
+            <div className="d-flex gap-2 mt-auto pt-3 border-top border-secondary border-opacity-25">
+              <button className="btn btn-sm btn-outline-info flex-grow-1 rounded-pill" onClick={() => onOpenModal('Configurar Cámara', 'form-camara', c, (updated) => setCamaras(camaras.map(cam => cam.id === c.id ? updated : cam)))}><i className="bi bi-gear-fill me-1"></i> Configurar</button>
+              <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onOpenModal('Eliminar Cámara', 'confirm-delete', { item: c.name }, () => setCamaras(camaras.filter(cam => cam.id !== c.id)))}><i className="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      )) : <div className="col-12 text-center text-white-50 mt-5 py-5"><i className="bi bi-search fs-1 d-block mb-3 opacity-50"></i><p>No se encontraron cámaras.</p></div>}
+    </div>
+  );
+};
+
+const SeguridadBitacora = ({ onOpenModal, bitacora, setBitacora }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const filtered = bitacora.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()) || b.type.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  return (
+    <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
+      <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-3 gap-3">
+        <h5 className="text-white mb-0">Bitácora Digital</h5>
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+          <div className="input-group" style={{ minWidth: '280px' }}>
+            <span className="input-group-text bg-transparent border-secondary border-opacity-25 text-white-50"><i className="bi bi-search"></i></span>
+            <input type="text" className="form-control bg-transparent border-secondary border-opacity-25 text-white shadow-none" placeholder="Buscar novedades..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
+          <button className="btn btn-premium-unique rounded-pill text-white px-4 py-2 fw-bold shadow-lg text-nowrap w-100 w-sm-auto" onClick={() => onOpenModal('Nueva Entrada', 'form-bitacora', null, (nuevo) => setBitacora([nuevo, ...bitacora]))}>
+            <i className="bi bi-journal-plus me-1"></i> Añadir Registro
+          </button>
+        </div>
+      </div>
+      <div className="col-12">
+        <div className="service-card-elite p-0 overflow-hidden">
+          <table className="table table-dark table-hover mb-0 bg-transparent text-white-50 align-middle">
+            <thead>
+              <tr>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3 px-4">Asunto / Descripción</th>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3">Turno</th>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3">Fecha y Hora</th>
+                <th className="bg-transparent text-white border-bottom border-secondary py-3 text-end px-4">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length > 0 ? filtered.map(b => (
+                <tr key={b.id}>
+                  <td className="bg-transparent py-3 px-4">
+                    <div className="d-flex align-items-center">
+                      <span className={`badge bg-${b.color} bg-opacity-25 text-${b.color} rounded-pill me-3 px-2 py-1`}><i className="bi bi-tag-fill me-1"></i>{b.type}</span>
+                      <div><span className="text-white fw-bold d-block">{b.title}</span><small className="text-white-50">{b.desc}</small></div>
+                    </div>
+                  </td>
+                  <td className="bg-transparent py-3 text-white-50"><i className="bi bi-person-badge me-1"></i>{b.shift}</td>
+                  <td className="bg-transparent py-3">{b.time}</td>
+                  <td className="bg-transparent py-3 text-end px-4">
+                    <button className="btn btn-sm btn-outline-info rounded-pill px-3 me-2 hover-cyan" onClick={() => onOpenModal('Editar Registro', 'form-bitacora', b, (updated) => setBitacora(bitacora.map(item => item.id === b.id ? updated : item)))}><i className="bi bi-pencil-square"></i></button>
+                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onOpenModal('Eliminar Registro', 'confirm-delete', { item: b.title }, () => setBitacora(bitacora.filter(item => item.id !== b.id)))}><i className="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              )) : <tr><td colSpan="4" className="bg-transparent py-5 text-center text-white-50"><i className="bi bi-search fs-1 d-block mb-3 opacity-50"></i>No se encontraron registros.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const SeguridadDashboard = ({ activeTab, onOpenModal }) => {
   const [accesos, setAccesos] = useState([
-    { id: 1, name: "Juan Pérez (Dpto 402)", action: "Ingreso Peatonal", time: "Hace 2 min", icon: "bi-person-check-fill", color: "success" },
-    { id: 2, name: "Vehículo Placa ABC-123", action: "Visita a Dpto 105", time: "Hace 15 min", icon: "bi-car-front-fill", color: "info" },
-    { id: 3, name: "Repartidor Delivery", action: "Salida Registrada", time: "Hace 45 min", icon: "bi-person-x-fill", color: "warning" }
+    { id: 1, name: "Juan Pérez", dptoPlaca: "Dpto 402", typeCode: 'peatonal', action: "Ingreso Peatonal", time: "Hoy, 08:30 AM", icon: "bi-person-check-fill", color: "success" },
+    { id: 2, name: "Carlos Ramos", dptoPlaca: "Placa ABC-123 (Dpto 105)", typeCode: 'vehiculo', action: "Ingreso Vehicular", time: "Hoy, 09:15 AM", icon: "bi-car-front-fill", color: "info" },
+    { id: 3, name: "Repartidor Delivery", dptoPlaca: "Empresa Rappi", typeCode: 'salida', action: "Salida Registrada", time: "Hoy, 09:45 AM", icon: "bi-person-x-fill", color: "warning" }
+  ]);
+  const [camaras, setCamaras] = useState([
+    { id: 1, name: "Cam 01: Ingreso Principal", location: "Lobby Frontal", status: "Grabando", color: "success" },
+    { id: 2, name: "Cam 02: Estacionamiento Norte", location: "Sótano 1", status: "Offline", color: "danger" },
+    { id: 3, name: "Cam 03: Ascensores", location: "Planta Baja", status: "Grabando", color: "success" }
+  ]);
+  const [bitacora, setBitacora] = useState([
+    { id: 1, title: "Ronda sin novedades", desc: "Se verificó iluminación en sótanos y áreas perimetrales.", type: "Rutina", shift: "Noche", time: "05/11/2023 - 02:00 AM", color: "info" },
+    { id: 2, title: "Portón trabado", desc: "El motor de la puerta vehicular presentó fallas al cerrar.", type: "Incidente", shift: "Día", time: "05/11/2023 - 10:30 AM", color: "warning" }
   ]);
   const [panicoActivo, setPanicoActivo] = useState(false);
 
   switch (activeTab) {
-    default: return <SeguridadMonitor onOpenModal={onOpenModal} accesos={accesos} setAccesos={setAccesos} panicoActivo={panicoActivo} setPanicoActivo={setPanicoActivo} />;
+    case 'Control de Accesos': return <SeguridadAccesos onOpenModal={onOpenModal} accesos={accesos} setAccesos={setAccesos} />;
+    case 'Cámaras (CCTV)': return <SeguridadCamaras onOpenModal={onOpenModal} camaras={camaras} setCamaras={setCamaras} />;
+    case 'Bitácora Digital': return <SeguridadBitacora onOpenModal={onOpenModal} bitacora={bitacora} setBitacora={setBitacora} />;
+    default: return <SeguridadMonitor panicoActivo={panicoActivo} setPanicoActivo={setPanicoActivo} accesos={accesos} camaras={camaras} />;
   }
 };
 
@@ -1213,8 +1383,17 @@ const Dashboard = () => {
 
   // --- SISTEMA INTELIGENTE DE MODALES CRUD ---
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
-  const openModal = (title, type, data = null, onConfirm = null) => setModalConfig({ isOpen: true, title, type, data, onConfirm });
-  const closeModal = () => setModalConfig({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
+  const [fileName, setFileName] = useState(''); // Estado global para los archivos adjuntos
+  
+  const openModal = (title, type, data = null, onConfirm = null) => {
+    setFileName(''); // Limpiar archivo al abrir
+    setModalConfig({ isOpen: true, title, type, data, onConfirm });
+  };
+  
+  const closeModal = () => {
+    setFileName(''); // Limpiar archivo al cerrar
+    setModalConfig({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
+  };
 
   // Estilo Premium para todos los inputs del modal
   const modalInputStyle = {
@@ -1263,7 +1442,7 @@ const Dashboard = () => {
           {/* Texto dinámico con mayor énfasis */}
           <div className="text-white-50 fs-5 mb-5 lh-lg px-3">
             {modalConfig.type === 'confirm-whatsapp' ? <p>¿Deseas redirigirte a WhatsApp para enviar un recordatorio automático a <strong className="text-white fs-4 d-block mt-2">{modalConfig.data?.item}</strong>?</p> :
-             modalConfig.type === 'confirm-export' ? <p>Se descargará un archivo PDF con el resumen financiero actual.</p> :
+             modalConfig.type === 'confirm-export' ? <p>Se generará y descargará un documento PDF con los registros actuales.</p> :
              modalConfig.type === 'confirm-save' ? <p>¿Estás seguro de que deseas aplicar estas configuraciones al sistema de Domus?</p> :
              <p>
                ¿Estás seguro de que deseas {action.text.toLowerCase()} <strong className="text-white">{modalConfig.data?.item ? `"${modalConfig.data.item}"` : 'este elemento'}</strong>? 
@@ -1292,16 +1471,17 @@ const Dashboard = () => {
           const formData = new FormData(e.target);
           const nombre = formData.get('nombre');
           const rol = formData.get('rol');
+          const telefono = formData.get('telefono');
           if (nombre && rol && modalConfig.onConfirm) {
             const iniciales = nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            modalConfig.onConfirm({ id: Date.now(), nombre, rol, iniciales, color: '#00d4ff' });
+            modalConfig.onConfirm({ id: modalConfig.data?.id || Date.now(), nombre, rol, telefono: telefono || '', iniciales, color: modalConfig.data?.color || '#00d4ff' });
             closeModal();
           }
         }}>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre Completo</label><input type="text" name="nombre" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Camila Mendoza" /></div>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre Completo</label><input type="text" name="nombre" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.nombre || ''} placeholder="Ej. Camila Mendoza" /></div>
           <div className="row g-3 mb-4">
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Parentesco</label><input type="text" name="rol" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Hija" /></div>
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Teléfono (Opcional)</label><input type="text" name="telefono" className="form-control shadow-none" style={modalInputStyle} placeholder="+51..." /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Parentesco</label><input type="text" name="rol" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.rol || ''} placeholder="Ej. Hija" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Teléfono (Opcional)</label><input type="text" name="telefono" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.telefono || ''} placeholder="+51..." /></div>
           </div>
           <div className="d-flex justify-content-end gap-3 mt-5 pt-4 border-top border-secondary border-opacity-25">
             <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
@@ -1317,6 +1497,7 @@ const Dashboard = () => {
           e.preventDefault();
           const formData = new FormData(e.target);
           const name = formData.get('name');
+          const dni = formData.get('dni');
           const typeCode = formData.get('type');
           const date = formData.get('date');
           const time = formData.get('time');
@@ -1328,13 +1509,22 @@ const Dashboard = () => {
             if (typeCode === 'del') { typeStr = "Delivery"; icon = "bi-box-seam"; color = "success"; }
             
             // Generar un PIN aleatorio de 4 dígitos
-            const pin = Math.floor(1000 + Math.random() * 9000).toString();
+            const pin = modalConfig.data?.pin || Math.floor(1000 + Math.random() * 9000).toString();
+            
+            const dateObj = new Date(date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
             
             modalConfig.onConfirm({
-              id: Date.now(),
+              id: modalConfig.data?.id || Date.now(),
               name,
+              dni: dni || '',
               type: typeStr,
               date: `${date} • ${time}`,
+              typeCode,
+              // eslint-disable-next-line no-dupe-keys
+              date: `${formattedDate} • ${time}`,
+              rawDate: date,
+              rawTime: time,
               pin,
               icon,
               color
@@ -1342,11 +1532,11 @@ const Dashboard = () => {
             closeModal();
           }
         }}>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre o Empresa del Visitante</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Roberto Sánchez / Empresa Delivery" /></div>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre o Empresa del Visitante</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.name || ''} placeholder="Ej. Roberto Sánchez / Empresa Delivery" /></div>
           <div className="row g-3 mb-4">
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>DNI / Pasaporte</label><input type="text" name="dni" className="form-control shadow-none" style={modalInputStyle} placeholder="Nro. Documento" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>DNI / Pasaporte</label><input type="text" name="dni" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.dni || ''} placeholder="Nro. Documento" /></div>
             <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Tipo de Visita</label>
-              <select name="type" className="form-select shadow-none py-2" style={modalInputStyle}>
+              <select name="type" className="form-select shadow-none py-2" style={modalInputStyle} defaultValue={modalConfig.data?.typeCode || 'fam'}>
                 <option value="fam">Familiar / Amigo</option>
                 <option value="prov">Proveedor / Técnico</option>
                 <option value="del">Delivery</option>
@@ -1358,14 +1548,14 @@ const Dashboard = () => {
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Fecha</label>
               <div className="position-relative">
                 <i className="bi bi-calendar-event position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="date" name="date" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} min={today} />
+                <input type="date" name="date" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} defaultValue={modalConfig.data?.rawDate || ''} min={today} />
               </div>
             </div>
             <div className="col-6">
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Hora Estimada</label>
               <div className="position-relative">
                 <i className="bi bi-clock position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="time" name="time" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} />
+                <input type="time" name="time" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} defaultValue={modalConfig.data?.rawTime || ''} />
               </div>
             </div>
           </div>
@@ -1401,6 +1591,9 @@ const Dashboard = () => {
               area, 
               date: formattedDate, 
               time: `${timeStart || '10:00'} - ${timeEnd || '12:00'}`,
+              rawDate: date,
+              rawTimeStart: timeStart,
+              rawTimeEnd: timeEnd,
               status: modalConfig.data?.status || "Aprobada", 
               color: modalConfig.data?.color || "success", 
               icon: modalConfig.data?.icon || icon 
@@ -1413,7 +1606,7 @@ const Dashboard = () => {
             <div className="d-flex flex-column gap-2">
               
               <label className="d-flex align-items-center p-3 rounded-4 border border-secondary border-opacity-50 transition-all hover-cyan shadow-sm" style={{ background: 'rgba(255,255,255,0.02)', cursor: 'pointer' }}>
-                <input type="radio" name="areaReserva" value="Zona de Parrillas" className="form-check-input mt-0 me-4 shadow-none fs-4" defaultChecked />
+                <input type="radio" name="areaReserva" value="Zona de Parrillas" className="form-check-input mt-0 me-4 shadow-none fs-4" defaultChecked={!modalConfig.data || modalConfig.data.area === 'Zona de Parrillas'} />
                 <div className="d-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-25 text-warning me-3 shadow-sm" style={{ width: '45px', height: '45px' }}><i className="bi bi-fire fs-5"></i></div>
                 <div>
                   <span className="text-white fw-bold d-block">Zona de Parrillas</span>
@@ -1422,7 +1615,7 @@ const Dashboard = () => {
               </label>
               
               <label className="d-flex align-items-center p-3 rounded-4 border border-secondary border-opacity-50 transition-all hover-cyan shadow-sm" style={{ background: 'rgba(255,255,255,0.02)', cursor: 'pointer' }}>
-                <input type="radio" name="areaReserva" value="Salón de Eventos" className="form-check-input mt-0 me-4 shadow-none fs-4" />
+                <input type="radio" name="areaReserva" value="Salón de Eventos" className="form-check-input mt-0 me-4 shadow-none fs-4" defaultChecked={modalConfig.data?.area === 'Salón de Eventos'} />
                 <div className="d-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-25 text-info me-3 shadow-sm" style={{ width: '45px', height: '45px' }}><i className="bi bi-music-note-beamed fs-5"></i></div>
                 <div>
                   <span className="text-white fw-bold d-block">Salón de Eventos</span>
@@ -1431,7 +1624,7 @@ const Dashboard = () => {
               </label>
 
               <label className="d-flex align-items-center p-3 rounded-4 border border-secondary border-opacity-50 transition-all hover-cyan shadow-sm" style={{ background: 'rgba(255,255,255,0.02)', cursor: 'pointer' }}>
-                <input type="radio" name="areaReserva" value="Piscina Techada" className="form-check-input mt-0 me-4 shadow-none fs-4" />
+                <input type="radio" name="areaReserva" value="Piscina Techada" className="form-check-input mt-0 me-4 shadow-none fs-4" defaultChecked={modalConfig.data?.area === 'Piscina Techada'} />
                 <div className="d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 text-success me-3 shadow-sm" style={{ width: '45px', height: '45px' }}><i className="bi bi-water fs-5"></i></div>
                 <div>
                   <span className="text-white fw-bold d-block">Piscina Techada</span>
@@ -1446,21 +1639,21 @@ const Dashboard = () => {
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Fecha de Reserva</label>
               <div className="position-relative">
                 <i className="bi bi-calendar-check position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="date" name="date" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} min={today} />
+                <input type="date" name="date" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} defaultValue={modalConfig.data?.rawDate || ''} min={today} />
               </div>
             </div>
             <div className="col-6">
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Hora Inicio</label>
               <div className="position-relative">
                 <i className="bi bi-clock position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="time" name="timeStart" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} />
+                <input type="time" name="timeStart" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} defaultValue={modalConfig.data?.rawTimeStart || ''} />
               </div>
             </div>
             <div className="col-6">
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Hora Fin</label>
               <div className="position-relative">
                 <i className="bi bi-clock-history position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="time" name="timeEnd" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} />
+                <input type="time" name="timeEnd" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} defaultValue={modalConfig.data?.rawTimeEnd || ''} />
               </div>
             </div>
           </div>
@@ -1478,30 +1671,44 @@ const Dashboard = () => {
           e.preventDefault();
           const formData = new FormData(e.target);
           const asunto = formData.get('asunto');
+          const tipo = formData.get('tipo');
+          const desc = formData.get('desc');
           if (asunto && modalConfig.onConfirm) {
-            const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
-            modalConfig.onConfirm({ id: Date.now(), asunto, date: today, status: "En Revisión", color: "warning" });
+            const today = modalConfig.data?.date || new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+            modalConfig.onConfirm({ id: modalConfig.data?.id || Date.now(), asunto, tipo, desc, date: today, status: modalConfig.data?.status || "En Revisión", color: modalConfig.data?.color || "warning" });
             closeModal();
           }
         }}>
           <div className="row g-3 mb-4">
             <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Tipo de Problema</label>
-              <select name="tipo" className="form-select shadow-none py-2" style={modalInputStyle}>
-                <option>Plomería / Agua</option>
-                <option>Eléctrico</option>
-                <option>Áreas Comunes</option>
-                <option>Seguridad</option>
+              <select name="tipo" className="form-select shadow-none py-2" style={modalInputStyle} defaultValue={modalConfig.data?.tipo || 'Plomería / Agua'}>
+                <option value="Plomería / Agua">Plomería / Agua</option>
+                <option value="Eléctrico">Eléctrico</option>
+                <option value="Áreas Comunes">Áreas Comunes</option>
+                <option value="Seguridad">Seguridad</option>
               </select>
             </div>
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Asunto Breve</label><input type="text" name="asunto" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Fuga en lavadero" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Asunto Breve</label><input type="text" name="asunto" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.asunto || ''} placeholder="Ej. Fuga en lavadero" /></div>
           </div>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Descripción detallada</label><textarea name="desc" rows="3" className="form-control shadow-none" style={modalInputStyle} placeholder="Explica el problema..."></textarea></div>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Descripción detallada</label><textarea name="desc" rows="3" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.desc || ''} placeholder="Explica el problema..."></textarea></div>
           <div className="mb-4">
             <label className="text-info small fw-bold mb-2 text-uppercase d-block" style={{ letterSpacing: '1px' }}>Adjuntar Foto (Opcional)</label>
-            <div className="border border-secondary border-opacity-50 rounded-3 p-4 text-center text-white-50" style={{ background: 'rgba(255,255,255,0.02)', borderStyle: 'dashed !important', cursor: 'pointer' }}>
-              <i className="bi bi-camera fs-2 d-block mb-2"></i>
-              <small>Haz clic para subir imagen</small>
-            </div>
+            <label className="border border-secondary border-opacity-50 rounded-3 p-4 text-center text-white-50 d-block transition-all hover-cyan shadow-sm" style={{ background: fileName ? 'rgba(0, 212, 255, 0.05)' : 'rgba(255,255,255,0.02)', borderStyle: fileName ? 'solid' : 'dashed', cursor: 'pointer', borderColor: fileName ? 'var(--accent-cyan)' : '' }}>
+              <input type="file" name="foto" className="d-none" accept="image/*" onChange={(e) => setFileName(e.target.files[0]?.name || '')} />
+              {fileName ? (
+                <>
+                  <i className="bi bi-image fs-2 d-block mb-2 text-info"></i>
+                  <span className="text-info fw-bold d-block text-truncate px-3">{fileName}</span>
+                  <small className="d-block mt-1 text-white-50">Haz clic para cambiar la imagen</small>
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-camera fs-2 d-block mb-2"></i>
+                  <span className="d-block fw-medium mb-1">Haz clic para subir imagen</span>
+                  <small className="text-white-50">Formatos: JPG, PNG (Max 5MB)</small>
+                </>
+              )}
+            </label>
           </div>
           <div className="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-25">
             <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
@@ -1575,6 +1782,25 @@ const Dashboard = () => {
             </select>
           </div>
           <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Descripción / Mensaje</label><textarea name="desc" required rows="3" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.desc || ''} placeholder="Escribe el mensaje aquí..."></textarea></div>
+          <div className="mb-4">
+            <label className="text-info small fw-bold mb-2 text-uppercase d-block" style={{ letterSpacing: '1px' }}>Adjuntar Archivo / Imagen (Opcional)</label>
+            <label className="border border-secondary border-opacity-50 rounded-3 p-4 text-center text-white-50 d-block transition-all hover-cyan shadow-sm" style={{ background: fileName ? 'rgba(0, 212, 255, 0.05)' : 'rgba(255,255,255,0.02)', borderStyle: fileName ? 'solid' : 'dashed', cursor: 'pointer', borderColor: fileName ? 'var(--accent-cyan)' : '' }}>
+              <input type="file" name="adjunto" className="d-none" accept="image/*,.pdf,.doc,.docx" onChange={(e) => setFileName(e.target.files[0]?.name || '')} />
+              {fileName ? (
+                <>
+                  <i className="bi bi-file-earmark-check fs-2 d-block mb-2 text-info"></i>
+                  <span className="text-info fw-bold d-block text-truncate px-3">{fileName}</span>
+                  <small className="d-block mt-1 text-white-50">Haz clic para cambiar el archivo</small>
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-cloud-arrow-up fs-2 d-block mb-2"></i>
+                  <span className="d-block fw-medium mb-1">Haz clic para subir archivo</span>
+                  <small className="text-white-50">Soporta: PDF, Word, JPG, PNG</small>
+                </>
+              )}
+            </label>
+          </div>
           <div className="d-flex justify-content-end gap-3 mt-5 pt-4 border-top border-secondary border-opacity-25">
             <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
             <button type="submit" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg">Publicar Anuncio</button>
@@ -1698,7 +1924,9 @@ const Dashboard = () => {
           const horaLlegada = formData.get('horaLlegada');
           const horaSalida = formData.get('horaSalida');
           if (placa && fecha && modalConfig.onConfirm) {
-            modalConfig.onConfirm({ id: Date.now(), tipo: "Reserva de Visita", detalle: `Placa: ${placa} • ${fecha} (${horaLlegada || '10:00'} a ${horaSalida || '12:00'})`, estado: "Aprobada", color: "success" });
+            const dateObj = new Date(fecha + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+            modalConfig.onConfirm({ id: Date.now(), tipo: "Reserva de Visita", detalle: `Placa: ${placa} • ${formattedDate} (${horaLlegada || '10:00'} a ${horaSalida || '12:00'})`, estado: "Aprobada", color: "success" });
             closeModal();
           }
         }}>
@@ -1743,8 +1971,9 @@ const Dashboard = () => {
           const placa = formData.get('placa');
           const horaInicio = formData.get('horaInicio');
           const horaFin = formData.get('horaFin');
+          const mensaje = formData.get('mensaje');
           if (dpto && modalConfig.onConfirm) {
-            modalConfig.onConfirm({ id: Date.now(), tipo: `Permiso a Dpto ${dpto}`, detalle: `Placa: ${placa || 'N/A'} • De ${horaInicio || '10:00'} a ${horaFin || '12:00'}`, estado: "Pendiente", color: "warning" });
+            modalConfig.onConfirm({ id: Date.now(), tipo: `Permiso a Dpto ${dpto}`, detalle: `Placa: ${placa || 'N/A'} • De ${horaInicio || '10:00'} a ${horaFin || '12:00'}`, mensaje, estado: "Pendiente", color: "warning" });
             closeModal();
           }
         }}>
@@ -1902,26 +2131,133 @@ const Dashboard = () => {
           e.preventDefault();
           const formData = new FormData(e.target);
           const name = formData.get('name');
+          const dptoPlaca = formData.get('dptoPlaca');
           const typeCode = formData.get('type');
           if (name && modalConfig.onConfirm) {
             let icon = 'bi-person-check-fill'; let color = 'success'; let action = 'Ingreso Peatonal';
             if (typeCode === 'vehiculo') { icon = 'bi-car-front-fill'; color = 'info'; action = 'Ingreso Vehicular'; }
             if (typeCode === 'salida') { icon = 'bi-person-x-fill'; color = 'warning'; action = 'Salida Registrada'; }
-            modalConfig.onConfirm({ id: Date.now(), name, action, time: 'Ahora mismo', icon, color });
+            modalConfig.onConfirm({ 
+              id: modalConfig.data?.id || Date.now(), 
+              name, 
+              dptoPlaca: dptoPlaca || '',
+              typeCode,
+              action, 
+              time: modalConfig.data?.time || 'Ahora mismo', 
+              icon, color 
+            });
             closeModal();
           }
         }}>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Identificación</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} placeholder="Nombre, Dpto o Placa" /></div>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Tipo de Registro</label>
-            <select name="type" className="form-select shadow-none py-2" style={modalInputStyle}>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre o Empresa</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.name || ''} placeholder="Ej. Juan Pérez" /></div>
+          <div className="row g-3 mb-4">
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Dpto o Placa (Opcional)</label><input type="text" name="dptoPlaca" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.dptoPlaca || ''} placeholder="Ej. Dpto 402" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Tipo de Registro</label>
+            <select name="type" className="form-select shadow-none py-2" style={modalInputStyle} defaultValue={modalConfig.data?.typeCode || 'peatonal'}>
               <option value="peatonal">Ingreso Peatonal</option>
               <option value="vehiculo">Ingreso Vehicular</option>
               <option value="salida">Registro de Salida</option>
             </select>
+            </div>
+          </div>
+          <div className="d-flex justify-content-end gap-3 mt-5 pt-4 border-top border-secondary border-opacity-25">
+            <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
+            <button type="submit" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg">Guardar Registro</button>
+          </div>
+        </form>
+      );
+    }
+
+    if (modalConfig.type === 'form-camara') {
+      return (
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const name = formData.get('name');
+          const location = formData.get('location');
+          const status = formData.get('status');
+          if (name && modalConfig.onConfirm) {
+            let color = 'success';
+            if (status === 'Offline') color = 'danger';
+            if (status === 'Mantenimiento') color = 'warning';
+            modalConfig.onConfirm({ id: modalConfig.data?.id || Date.now(), name, location, status, color });
+            closeModal();
+          }
+        }}>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre / Etiqueta de la Cámara</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.name || ''} placeholder="Ej. Cam 04: Pasillo Sur" /></div>
+          <div className="row g-3 mb-4">
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Ubicación Física</label><input type="text" name="location" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.location || ''} placeholder="Ej. Planta Baja" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Estado Operativo</label>
+              <select name="status" className="form-select shadow-none py-2" style={modalInputStyle} defaultValue={modalConfig.data?.status || 'Grabando'}>
+                <option value="Grabando">Online / Grabando</option>
+                <option value="Offline">Offline / Señal Perdida</option>
+                <option value="Mantenimiento">En Mantenimiento</option>
+              </select>
+            </div>
           </div>
           <div className="d-flex justify-content-end gap-3 mt-5 pt-4 border-top border-secondary border-opacity-25">
             <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
             <button type="submit" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg">Registrar</button>
+          </div>
+        </form>
+      );
+    }
+
+    if (modalConfig.type === 'form-bitacora') {
+      return (
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const title = formData.get('title');
+          const desc = formData.get('desc');
+          const type = formData.get('type');
+          const shift = formData.get('shift');
+          if (title && modalConfig.onConfirm) {
+            let color = 'info'; if (type === 'Incidente') color = 'warning'; if (type === 'Emergencia') color = 'danger';
+            const currentTime = modalConfig.data?.time || new Date().toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+            modalConfig.onConfirm({ id: modalConfig.data?.id || Date.now(), title, desc, type, shift, time: currentTime, color });
+            closeModal();
+          }
+        }}>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Asunto o Novedad</label><input type="text" name="title" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.title || ''} placeholder="Ej. Ronda sin novedades" /></div>
+          <div className="row g-3 mb-4">
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Tipo de Reporte</label>
+              <select name="type" className="form-select shadow-none py-2" style={modalInputStyle} defaultValue={modalConfig.data?.type || 'Rutina'}>
+                <option value="Rutina">Ronda de Rutina</option>
+                <option value="Incidente">Incidente Leve</option>
+                <option value="Emergencia">Emergencia / Grave</option>
+              </select>
+            </div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Turno Asignado</label>
+              <select name="shift" className="form-select shadow-none py-2" style={modalInputStyle} defaultValue={modalConfig.data?.shift || 'Día'}>
+                <option value="Día">Turno Día</option>
+                <option value="Noche">Turno Noche</option>
+              </select>
+            </div>
+          </div>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Descripción de los hechos</label><textarea name="desc" required rows="3" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.desc || ''} placeholder="Escribe el detalle aquí..."></textarea></div>
+          <div className="mb-4">
+            <label className="text-info small fw-bold mb-2 text-uppercase d-block" style={{ letterSpacing: '1px' }}>Adjuntar Foto / Evidencia (Opcional)</label>
+            <label className="border border-secondary border-opacity-50 rounded-3 p-4 text-center text-white-50 d-block transition-all hover-cyan shadow-sm" style={{ background: fileName ? 'rgba(0, 212, 255, 0.05)' : 'rgba(255,255,255,0.02)', borderStyle: fileName ? 'solid' : 'dashed', cursor: 'pointer', borderColor: fileName ? 'var(--accent-cyan)' : '' }}>
+              <input type="file" name="foto" className="d-none" accept="image/*" onChange={(e) => setFileName(e.target.files[0]?.name || '')} />
+              {fileName ? (
+                <>
+                  <i className="bi bi-image fs-2 d-block mb-2 text-info"></i>
+                  <span className="text-info fw-bold d-block text-truncate px-3">{fileName}</span>
+                  <small className="d-block mt-1 text-white-50">Haz clic para cambiar la imagen</small>
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-camera fs-2 d-block mb-2"></i>
+                  <span className="d-block fw-medium mb-1">Haz clic para adjuntar foto al reporte</span>
+                  <small className="text-white-50">Formatos: JPG, PNG (Max 5MB)</small>
+                </>
+              )}
+            </label>
+          </div>
+          <div className="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-25">
+            <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
+            <button type="submit" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg">Guardar Entrada</button>
           </div>
         </form>
       );
