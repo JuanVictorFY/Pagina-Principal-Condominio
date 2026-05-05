@@ -21,9 +21,9 @@ const Home = () => {
       <AppPromo />
       <Integrations />
       <About />
-      <Steps />
-      <Pricing />
       <Testimonials />
+      <Steps /> {/* Proceso de implementación */}
+      <Pricing />
       <Faq />
       <Contact />
     </main>
