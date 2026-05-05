@@ -1,9 +1,41 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    // 1. Validar campos vacíos
+    if (!email || !password) {
+      setError('Por favor, completa todos los campos.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 2. Simular llamada a la base de datos (1.5 segundos)
+    setTimeout(() => {
+      let role = null;
+      if (email === 'admin@domus.com' && password === '123') role = 'admin';
+      else if (email === 'residente@domus.com' && password === '123') role = 'residente';
+      else if (email === 'seguridad@domus.com' && password === '123') role = 'seguridad';
+
+      if (role) {
+        // ¡Logeo exitoso! Pasamos el rol detectado a la ruta del dashboard
+        navigate('/dashboard', { state: { role: role, userEmail: email } }); 
+      } else {
+        setError('Correo o contraseña incorrectos. Inténtalo de nuevo.');
+      }
+      setIsLoading(false);
+    }, 1500);
+  };
 
   return (
     <section className="min-vh-100 d-flex align-items-center justify-content-center py-5 position-relative" style={{ background: '#020617' }}>
@@ -28,7 +60,14 @@ const Login = () => {
                 <p className="text-white-50">Ingresa tus credenciales para continuar</p>
               </div>
 
-              <form>
+              {/* Alerta de Error */}
+              {error && (
+                <div className="alert alert-danger bg-transparent border-danger text-danger text-center small py-2 mb-4 rounded-3" role="alert">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i> {error}
+                </div>
+              )}
+
+              <form onSubmit={handleLogin}>
                 <div className="mb-4">
                   <label className="form-label text-white-50 small fw-bold text-uppercase">Correo Electrónico</label>
                   <input 
@@ -54,8 +93,12 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <button type="button" className="btn btn-premium-unique text-white w-100 py-3 rounded-pill fw-bold mb-4 mt-2">
-                  INICIAR SESIÓN
+                <button type="submit" className="btn btn-premium-unique text-white w-100 py-3 rounded-pill fw-bold mb-4 mt-2 d-flex justify-content-center align-items-center" disabled={isLoading}>
+                  {isLoading ? (
+                    <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Ingresando...</>
+                  ) : (
+                    'INICIAR SESIÓN'
+                  )}
                 </button>
                 <div className="text-center">
                   <span className="text-white-50">¿No tienes una cuenta? </span>
@@ -69,21 +112,21 @@ const Login = () => {
                     <button 
                       type="button" 
                       className="btn btn-sm btn-outline-info rounded-pill px-3"
-                      onClick={() => { setEmail('admin@domus.com'); setPassword('admin123'); }}
+                      onClick={() => { setEmail('admin@domus.com'); setPassword('123'); }}
                     >
                       Administrador
                     </button>
                     <button 
                       type="button" 
                       className="btn btn-sm btn-outline-success rounded-pill px-3"
-                      onClick={() => { setEmail('residente@domus.com'); setPassword('residente123'); }}
+                      onClick={() => { setEmail('residente@domus.com'); setPassword('123'); }}
                     >
                       Residente
                     </button>
                     <button 
                       type="button" 
                       className="btn btn-sm btn-outline-warning rounded-pill px-3"
-                      onClick={() => { setEmail('seguridad@domus.com'); setPassword('seguridad123'); }}
+                      onClick={() => { setEmail('seguridad@domus.com'); setPassword('123'); }}
                     >
                       Seguridad
                     </button>
