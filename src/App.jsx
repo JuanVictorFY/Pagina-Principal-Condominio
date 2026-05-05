@@ -5,10 +5,13 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './Home';
 import Login from './Login';
+import Dashboard from './Dashboard';
 import './App.css';
 
 function App() {
   const location = useLocation();
+
+  const isDashboard = location.pathname === '/dashboard';
 
   // Controla el scroll general y los enlaces con hash (#)
   useEffect(() => {
@@ -33,32 +36,35 @@ function App() {
 
   return (
     <div className="app-wrapper bg-dark overflow-x-hidden">
-      <Navbar />
+      {!isDashboard && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
 
-      <Footer />
+      {!isDashboard && <Footer />}
 
       {/* Botón Flotante WhatsApp */}
-      <div 
-        className="position-fixed bottom-0 end-0 p-4" 
-        style={{ zIndex: 2000 }}
-        data-aos="fade-left"
-        data-aos-delay="1000"
-      >
-        <a 
-          href="https://wa.me/tu-numero" 
-          target="_blank" 
-          rel="noreferrer"
-          className="btn btn-success rounded-circle d-flex align-items-center justify-content-center shadow-lg border-2 border-white btn-whatsapp-custom"
-          style={{ width: '65px', height: '65px' }}
+      {!isDashboard && (
+        <div 
+          className="position-fixed bottom-0 end-0 p-4" 
+          style={{ zIndex: 2000 }}
+          data-aos="fade-left"
+          data-aos-delay="1000"
         >
-          <i className="bi bi-whatsapp fs-2"></i>
-        </a>
-      </div>
+          <a 
+            href="https://wa.me/tu-numero" 
+            target="_blank" 
+            rel="noreferrer"
+            className="btn btn-success rounded-circle d-flex align-items-center justify-content-center shadow-lg border-2 border-white btn-whatsapp-custom"
+            style={{ width: '65px', height: '65px' }}
+          >
+            <i className="bi bi-whatsapp fs-2"></i>
+          </a>
+        </div>
+      )}
     </div>
   );
 }
