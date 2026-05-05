@@ -16,14 +16,17 @@ const Hero = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 800,
+    speed: 600, // Transición un poco más rápida y dinámica
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 3500,
     centerMode: true,
     centerPadding: '0px',
     arrows: true,
+    swipeToSlide: true, // Permite arrastrar naturalmente sin que se trabe
+    touchThreshold: 100, // Mayor sensibilidad táctil para móviles
+    pauseOnHover: true,
     responsive: [
       { 
         breakpoint: 1200, 
@@ -36,17 +39,19 @@ const Hero = () => {
       { 
         breakpoint: 992, 
         settings: { 
-          slidesToShow: 1,
+          slidesToShow: 2,
           centerMode: true,
-          centerPadding: '100px' 
+          centerPadding: '40px',
+          arrows: false
         } 
       },
       { 
         breakpoint: 768, 
         settings: { 
           slidesToShow: 1,
-          centerMode: true,
-          centerPadding: '30px' 
+          centerMode: false, /* Desactivado en celular para evitar tarjetas cortadas */
+          centerPadding: '0px',
+          arrows: false
         } 
       }
     ]
@@ -59,10 +64,9 @@ const Hero = () => {
       backgroundPosition: 'center',
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
-      paddingTop: '80px'
+      alignItems: 'center'
     }}>
-      <div className="container text-center text-white">
+      <div className="container text-center text-white hero-inner-content">
         {/* Título Principal */}
         <h1 className="display-2 fw-bold mb-3" data-aos="fade-down">
           Eleva el diseño y control <br/> de tu condominio.
@@ -77,7 +81,7 @@ const Hero = () => {
         <div className="carousel-wrapper mx-auto" style={{ maxWidth: '1100px' }} data-aos="fade-up" data-aos-delay="400">
           <SlickSlider {...settings}>
             {cards.map((card, index) => (
-              <div key={index} className="px-3 pb-5 h-100"> 
+              <div key={index} className="px-3 pb-5 h-100 w-100"> 
                 <FeatureCard {...card} />
               </div>
             ))}
@@ -86,7 +90,7 @@ const Hero = () => {
 
         {/* Footer del Hero */}
         <div className="mt-4 pb-4 opacity-50" data-aos="fade-up">
-            <h3 className="fw-light fs-5">¿Por qué Oasis?</h3>
+            <h3 className="fw-light fs-5">¿Por qué Domus?</h3>
             <div className="d-flex justify-content-center gap-4 mt-3 flex-wrap small">
               <span>• Monitoreo real</span>
               <span>• Acceso Seguro</span>

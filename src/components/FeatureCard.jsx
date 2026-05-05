@@ -23,7 +23,7 @@ const FeatureCard = ({ icon, title, text }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="card-body text-center">
+      <div className="card-body text-center d-flex flex-column justify-content-start align-items-center h-100">
         {/* Contenedor del Icono con los nuevos colores Azules */}
         <div 
           className="d-inline-flex align-items-center justify-content-center mb-3 rounded-circle" 

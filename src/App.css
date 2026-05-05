@@ -16,6 +16,8 @@ html {
 body {
   margin: 0;
   padding: 0;
+  width: 100vw;
+  max-width: 100%;
   overflow-x: hidden;
   background-color: var(--dark-navy);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -24,6 +26,8 @@ body {
 
 .app-wrapper {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
 }
 
@@ -66,7 +70,15 @@ section {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding: 0 45px; /* Espacio para que las flechas no se encimen */
+  padding: 0 45px 50px 45px;
+  min-width: 0; /* FIX BLINDADO: Evita que otras etiquetas flex aplasten el carrusel */
+  display: block;
+}
+
+.slick-slider {
+  width: 100%;
+  box-sizing: border-box;
+  touch-action: pan-y; /* FIX BLINDADO: Protege el swipe y scroll nativo del celular */
 }
 
 .slick-list {
@@ -113,10 +125,18 @@ section {
 
 /* Efectos de Center Mode */
 .slick-slide {
+  display: flex !important;
+  height: auto !important; /* FIX BLINDADO: Fuerza a todas las tarjetas a igualar su altura sin romperse */
   padding: 20px 10px;
   transition: all 0.5s ease;
-  opacity: 0.4;
-  transform: scale(0.85); /* Cartas laterales más pequeñas */
+  opacity: 0.65;
+  transform: scale(0.85);
+  box-sizing: border-box !important;
+}
+
+.slick-slide > div {
+  width: 100%;
+  display: flex;
 }
 
 .slick-center {
@@ -124,14 +144,41 @@ section {
   transform: scale(1); /* Carta central tamaño real */
 }
 
+/* ==========================================================================
+   PUNTOS DEL CARRUSEL (DOTS PREMIUM TIPO CÁPSULA)
+   ========================================================================== */
+.slick-dots {
+  bottom: -15px !important;
+}
+
+.slick-dots li {
+  width: 12px !important;
+  height: 6px !important;
+  margin: 0 4px !important;
+  transition: all 0.3s ease;
+}
+
+.slick-dots li button {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
 .slick-dots li button:before {
-  color: white !important;
-  opacity: 0.3 !important;
+  content: '' !important;
+  width: 10px !important;
+  height: 6px !important;
+  background-color: white !important;
+  opacity: 0.25 !important;
+  border-radius: 10px !important;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
 .slick-dots li.slick-active button:before {
+  width: 28px !important; /* La cápsula se expande cuando está activa */
+  background-color: var(--accent-cyan) !important;
   opacity: 1 !important;
-  color: var(--accent-cyan) !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
 }
 
 /* ==========================================================================
@@ -290,18 +337,49 @@ textarea:focus::placeholder {
 }
 
 /* ==========================================================================
-   RESPONSIVO
+   TESTIMONIOS Y CASOS DE ÉXITO
    ========================================================================== */
-@media (max-width: 768px) {
-  .display-2 { font-size: 2.3rem; }
-  .display-4 { font-size: 2rem; }
-  .hero-container { padding: 60px 0; }
-  .carousel-wrapper { padding: 0 15px; }
-  .slick-prev { left: 0px !important; }
-  .slick-next { right: 0px !important; }
+.testimonial-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
+
+.testimonial-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.15);
+}
+
+.avatar-circle {
+  width: 45px; height: 45px;
+  background: linear-gradient(135deg, var(--primary-blue), var(--accent-cyan));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.1rem; color: white;
+}
+
+/* Control base del Hero para permitir el empuje del menú */
+.hero-container {
+  padding-top: 100px;
+  transition: padding-top 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) !important; /* Animación tipo resorte fluida */
+}
+
+/* Efecto visual extra al contenido cuando es empujado */
+.hero-inner-content {
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+}
+
+body:has(.navbar-collapse.show) .hero-inner-content {
+  transform: scale(0.95); /* Se encoge ligeramente dando efecto de profundidad */
+  opacity: 0.85;
+}
+
 /* ==========================================================================
-   SISTEMA DE RESPONSIVIDAD INTEGRAL
+   SISTEMA DE RESPONSIVIDAD INTEGRAL Y FLUIDO
    ========================================================================== */
 
 /* Ajustes para Tablets y Móviles (Menos de 992px) */
@@ -310,29 +388,61 @@ textarea:focus::placeholder {
   .display-4 { font-size: 2.2rem !important; }
   
   .carousel-wrapper {
-    padding: 0 20px;
+    padding: 0 10px 45px 10px; /* Aseguramos espacio extra abajo en móvil */
     max-width: 100%;
   }
 
-  .slick-prev { left: -10px !important; }
-  .slick-next { right: -10px !important; }
+  /* Ocultamos las flechas en tablets/móviles, el usuario usa touch/swipe */
+  .slick-prev, .slick-next {
+    display: none !important;
+  }
 
   /* Reducimos el escalado en móvil para evitar saltos visuales */
   .slick-slide {
-    transform: scale(0.95);
+    transform: scale(1);
     opacity: 1; /* En móvil es mejor que todas sean visibles */
+    padding: 10px;
+  }
+
+  /* Navbar: Asegurar que el menú colapsable se vea bien en tablets y móviles */
+  .navbar-collapse {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    margin-top: 20px;
+    padding: 25px;
+    border-radius: 24px;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+  }
+
+  .navbar-collapse .nav-link {
+    padding: 12px 0;
+    font-size: 1.1rem;
+  }
+  
+  /* MAGIA: Empuja el contenido del Hero hacia abajo cuando el menú se abre */
+  body:has(.navbar-collapse.show) .hero-container {
+    padding-top: 480px !important; /* Espacio extendido para empujar por completo */
+  }
+  
+  /* Animación elegante al abrir el menú */
+  .navbar-collapse.show {
+    animation: fadeInDown 0.3s ease-out forwards;
   }
 }
 
 /* Ajustes para Móviles Pequeños (Menos de 576px) */
 @media (max-width: 575.98px) {
   .display-2 { font-size: 2.2rem !important; }
-  .display-4 { font-size: 1.8rem !important; }
+  .display-4 { font-size: 2rem !important; }
   
-  .hero-container {
-    padding-top: 100px;
-    min-height: auto;
-    padding-bottom: 50px;
+  body:has(.navbar-collapse.show) .hero-container {
+    padding-top: 520px !important; /* Aún más espacio en celulares pequeños */
+  }
+
+  .testimonial-card, .card {
+    margin-bottom: 10px;
   }
 
   .service-card-elite {
@@ -344,16 +454,6 @@ textarea:focus::placeholder {
   .btn-whatsapp-custom {
     width: 55px !important;
     height: 55px !important;
-  }
-
-  /* Navbar: Asegurar que el menú colapsable se vea bien */
-  .navbar-collapse {
-    background: rgba(2, 6, 23, 0.95);
-    backdrop-filter: blur(15px);
-    margin-top: 15px;
-    padding: 20px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .nav-item {
@@ -368,4 +468,10 @@ textarea:focus::placeholder {
 }
 .aos-animate {
   pointer-events: auto;
+}
+
+/* Animaciones globales */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

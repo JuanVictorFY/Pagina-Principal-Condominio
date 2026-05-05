@@ -1,14 +1,20 @@
 import { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import AOS from 'aos';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Services from './components/Services';
-import Pricing from './components/Pricing';
-import Contact from './components/Contact';
-import Footer from './components/Footer'; // Importación del nuevo footer
+import Footer from './components/Footer';
+import Home from './Home';
+import Login from './Login';
 import './App.css';
 
 function App() {
+  const location = useLocation();
+
+  // Restablece el scroll arriba cada vez que cambiamos de página
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -21,14 +27,11 @@ function App() {
     <div className="app-wrapper bg-dark overflow-x-hidden">
       <Navbar />
 
-      <main>
-        <Hero />
-        <Services /> 
-        <Pricing />
-        <Contact />
-      </main>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
 
-      {/* Sustitución del footer antiguo por el completo */}
       <Footer />
 
       {/* Botón Flotante WhatsApp */}

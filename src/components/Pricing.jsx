@@ -36,7 +36,7 @@ const Pricing = () => {
           <p className="opacity-75 fs-5 text-info">Soluciones seguras y profesionales para tu comunidad</p>
         </div>
 
-        <div className="row g-4 justify-content-center">
+        <div className="row g-5 justify-content-center pt-3">
           {plans.map((plan, index) => (
             <div className="col-md-4" key={index} data-aos="fade-up" data-aos-delay={index * 150}>
               <div 
@@ -93,7 +93,7 @@ const Pricing = () => {
                       backgroundColor: plan.popular ? '#0056b3' : 'transparent',
                       borderColor: plan.popular ? 'transparent' : 'rgba(255,255,255,0.5)',
                     }}
-                    onClick={() => window.location.href = '#contacto'}
+                  onClick={() => window.location.href = '/#contacto'}
                   >
                     Seleccionar Plan
                   </button>
