@@ -77,8 +77,9 @@ const Hero = () => {
           Un sistema de gestión moderno y eficiente para administradores y residentes.
         </p>
 
-        {/* Carrusel de Tarjetas (Ahora más cerca del texto al no haber botones) */}
-        <div className="carousel-wrapper mx-auto" style={{ maxWidth: '1100px' }} data-aos="fade-up" data-aos-delay="400">
+      {/* Carrusel de Tarjetas con Resplandor de Fondo */}
+      <div className="carousel-wrapper mx-auto position-relative" style={{ maxWidth: '1100px' }} data-aos="fade-up" data-aos-delay="400">
+        <div className="position-absolute top-50 start-50 translate-middle w-100 h-100" style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 60%)', zIndex: -1 }}></div>
           <SlickSlider {...settings}>
             {cards.map((card, index) => (
               <div key={index} className="px-3 pb-5 h-100 w-100"> 
