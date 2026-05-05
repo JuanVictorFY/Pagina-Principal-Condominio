@@ -6,14 +6,22 @@ import Contact from './components/Contact';
 import Features from './Features';
 import About from './About';
 import Faq from './Faq';
+import DashboardPreview from './DashboardPreview';
+import AppPromo from './AppPromo';
+import Integrations from './Integrations';
+import Steps from './Steps';
 
 const Home = () => {
   return (
     <main>
       <Hero />
       <Services /> 
+      <DashboardPreview />
       <Features />
+      <AppPromo />
+      <Integrations />
       <About />
+      <Steps />
       <Pricing />
       <Testimonials />
       <Faq />
