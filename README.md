@@ -86,9 +86,9 @@ Sigue estos pasos para clonar y ejecutar el proyecto en tu entorno local:
    git clone https://github.com/tu-usuario/domus-condominios.git
    ```
 
-2. **Navegar al directorio del proyecto:**
+2. **Navegar al directorio del frontend:**
    ```bash
-   cd domus-condominios
+   cd domus-condominios/frontend
    ```
 
 3. **Instalar las dependencias:**
@@ -115,14 +115,17 @@ Sigue estos pasos para clonar y ejecutar el proyecto en tu entorno local:
 ## 📂 Estructura Principal del Proyecto
 
 ```text
-src/
- ├── components/       # Componentes reusables (Navbar, Footer, Pricing, Contact)
- ├── App.jsx           # Enrutador principal y layout global
- ├── App.css           # Estilos globales, variables y utilidades (Glassmorphism)
- ├── Home.jsx          # Landing page (Landing Page completa)
- ├── Login.jsx         # Vista de autenticación y simulador de roles
- ├── Dashboard.jsx     # Núcleo del sistema: Vistas CRUD para Admin, Residente y Seguridad
- └── main.jsx          # Punto de entrada de React
+domus-condominios/
+ ├── frontend/                 # Todo el ecosistema de React (UI, Vistas y Estilos)
+ │    ├── src/
+ │    │   ├── components/      # Componentes reusables
+ │    │   ├── App.jsx          # Enrutador principal
+ │    │   └── ... 
+ │    ├── public/              # Recursos estáticos e imágenes
+ │    ├── package.json         # Dependencias del frontend
+ │    └── vite.config.js       # Configuración del empaquetador
+ │
+ └── backend/                  # (Próximamente) Código de tu API y Servidor
 ```
 
 ---
