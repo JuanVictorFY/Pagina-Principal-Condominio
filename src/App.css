@@ -514,3 +514,71 @@ body:has(.navbar-collapse.show) .hero-inner-content {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   DASHBOARD INTERNO (SAAS UI)
+   ========================================================================== */
+.dashboard-sidebar {
+  width: 280px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  position: fixed;
+  height: 100vh;
+  top: 0; left: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.dashboard-main {
+  margin-left: 280px;
+  min-height: 100vh;
+  background: #020617;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+}
+
+@media (max-width: 991.98px) {
+  .dashboard-sidebar { transform: translateX(-100%); }
+  .dashboard-main { margin-left: 0; }
+  .dash-mobile-nav { display: flex !important; }
+}
+
+.dash-mobile-nav { display: none; }
+
+/* ==========================================================================
+   DATE & TIME PICKERS PREMIUM
+   ========================================================================== */
+.date-time-premium {
+  cursor: pointer;
+  position: relative;
+}
+
+.date-time-premium::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 10;
+}
