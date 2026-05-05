@@ -62,26 +62,47 @@ const Navbar = () => {
         </button>
 
         {/* Contenido Colapsable */}
-        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
-          <ul className="navbar-nav gap-lg-2 text-center my-3 my-lg-0 me-auto"> {/* 'me-auto' para empujar los botones de acción a la derecha */}
-            {navItems.map((item) => {
-              const isActive = item.link.includes('#') 
-                ? location.hash === item.link.substring(item.link.indexOf('#'))
-                : location.pathname === item.link && !location.hash;
-              return (
-                <li className="nav-item" key={item.name}>
-                  <Link 
-                    className={`nav-link fw-medium custom-nav-link px-2 ${isActive ? 'text-info opacity-100' : 'text-white opacity-75'}`} 
-                    to={item.link} 
-                    style={navLinkStyle}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav" style={{ flexGrow: 1 }}> {/* Añadido flexGrow para asegurar que ocupe el espacio */}
+          <div className="d-flex flex-column align-items-center mx-lg-auto my-3 my-lg-0">
+            <ul className="navbar-nav gap-lg-3 text-center">
+              {navItems.slice(0, 8).map((item) => {
+                const isActive = item.link.includes('#') 
+                  ? location.hash === item.link.substring(item.link.indexOf('#'))
+                  : location.pathname === item.link && !location.hash;
+                return (
+                  <li className="nav-item" key={item.name}>
+                    <Link 
+                      className={`nav-link fw-medium custom-nav-link px-2 ${isActive ? 'text-info opacity-100' : 'text-white opacity-75'}`} 
+                      to={item.link} 
+                      style={navLinkStyle}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            <ul className="navbar-nav gap-lg-3 text-center">
+              {navItems.slice(8).map((item) => {
+                const isActive = item.link.includes('#') 
+                  ? location.hash === item.link.substring(item.link.indexOf('#'))
+                  : location.pathname === item.link && !location.hash;
+                return (
+                  <li className="nav-item" key={item.name}>
+                    <Link 
+                      className={`nav-link fw-medium custom-nav-link px-2 ${isActive ? 'text-info opacity-100' : 'text-white opacity-75'}`} 
+                      to={item.link} 
+                      style={navLinkStyle}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
           {/* Botones de Acción dentro del colapso para móvil */}
           <div className="d-lg-none d-flex flex-column align-items-center gap-3 pt-3 pb-2 border-top border-secondary border-opacity-25 w-100 mt-3"> {/* Agregado mt-3 para separación en móvil */}
@@ -109,14 +130,16 @@ const Navbar = () => {
              }}>Registrar</Link>
           
           <button 
-            className="btn rounded-pill px-4 py-2 fw-bold"
+            className="btn rounded-pill px-5 py-2 fw-bold text-nowrap"
             style={{
               transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
               backgroundColor: isHovered ? '#0056b3' : '#f8f9fa',
               color: isHovered ? '#fff' : '#0056b3',
               border: isHovered ? '2px solid #0056b3' : '2px solid transparent',
+              minWidth: '180px', // Asegura la forma de cápsula alargada horizontalmente
               transform: isHovered ? 'scale(1.1) translateY(-3px)' : 'scale(1)',
               boxShadow: isHovered ? '0 10px 20px rgba(0, 86, 179, 0.3)' : '0 4px 6px rgba(0,0,0,0.1)',
+              letterSpacing: '0.5px', // Alarga visualmente el botón
               cursor: 'pointer'
             }}
             onMouseEnter={() => setIsHovered(true)}
