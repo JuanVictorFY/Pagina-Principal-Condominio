@@ -330,10 +330,14 @@ section {
   transition: all 0.3s ease;
 }
 
+/* Asegura que los enlaces y textos permitan la animación sin dañar contenedores (tarjetas) */
+a.hover-cyan, span.hover-cyan {
+  display: inline-block;
+}
+
 .hover-cyan:hover {
   color: var(--accent-cyan) !important;
   transform: translateX(3px);
-  display: inline-block;
 }
 
 /* ==========================================================================
