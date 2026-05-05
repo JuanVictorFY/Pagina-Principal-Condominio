@@ -370,8 +370,14 @@ const AdminDashboard = ({ activeTab, onOpenModal }) => {
   }
 };
 
-const ResidenteMiDomicilio = ({ onOpenModal }) => (
-  <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
+const ResidenteMiDomicilio = ({ onOpenModal }) => {
+  const [integrantes, setIntegrantes] = useState([
+    { id: 1, nombre: 'Laura Mendoza', rol: 'Titular', iniciales: 'LM', color: '' },
+    { id: 2, nombre: 'Diego Mendoza', rol: 'Hijo', iniciales: 'DM', color: '#6c757d' }
+  ]);
+
+  return (
+    <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
     <div className="col-lg-4">
       <div className="service-card-elite p-4 h-100 position-relative overflow-hidden">
         <div className="position-absolute top-0 end-0 p-3 opacity-25"><i className="bi bi-house-heart display-1"></i></div>
@@ -414,25 +420,20 @@ const ResidenteMiDomicilio = ({ onOpenModal }) => (
         <div className="col-12 mt-4">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5 className="text-white mb-0">Integrantes del Departamento</h5>
-            <button className="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold" onClick={() => onOpenModal('Agregar Integrante', 'form-integrante')}><i className="bi bi-person-plus me-1"></i> Agregar</button>
+            <button className="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold" onClick={() => onOpenModal('Agregar Integrante', 'form-integrante', null, (nuevo) => setIntegrantes([...integrantes, nuevo]))}><i className="bi bi-person-plus me-1"></i> Agregar</button>
           </div>
           <div className="service-card-elite p-0 overflow-hidden">
             <table className="table table-dark table-hover mb-0 bg-transparent text-white-50 align-middle">
               <tbody>
-                <tr>
-                  <td className="bg-transparent py-3 px-4"><div className="d-flex align-items-center"><div className="avatar-circle me-3 shadow-sm" style={{ width: '35px', height: '35px', fontSize: '0.9rem' }}>LM</div><span className="text-white fw-medium">Laura Mendoza</span></div></td>
-                  <td className="bg-transparent py-3">Titular</td>
-                  <td className="bg-transparent py-3 text-end px-4">
-                    <button className="btn btn-sm btn-link text-danger p-0" onClick={() => onOpenModal('Eliminar Integrante', 'confirm-delete', { item: 'Laura Mendoza' })}><i className="bi bi-trash fs-5"></i></button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="bg-transparent py-3 px-4"><div className="d-flex align-items-center"><div className="avatar-circle me-3 shadow-sm" style={{ width: '35px', height: '35px', fontSize: '0.9rem', background: '#6c757d' }}>DM</div><span className="text-white fw-medium">Diego Mendoza</span></div></td>
-                  <td className="bg-transparent py-3">Hijo</td>
-                  <td className="bg-transparent py-3 text-end px-4">
-                    <button className="btn btn-sm btn-link text-danger p-0" onClick={() => onOpenModal('Eliminar Integrante', 'confirm-delete', { item: 'Diego Mendoza' })}><i className="bi bi-trash fs-5"></i></button>
-                  </td>
-                </tr>
+                {integrantes.map((int) => (
+                  <tr key={int.id}>
+                    <td className="bg-transparent py-3 px-4"><div className="d-flex align-items-center"><div className="avatar-circle me-3 shadow-sm" style={{ width: '35px', height: '35px', fontSize: '0.9rem', background: int.color || undefined }}>{int.iniciales}</div><span className="text-white fw-medium">{int.nombre}</span></div></td>
+                    <td className="bg-transparent py-3">{int.rol}</td>
+                    <td className="bg-transparent py-3 text-end px-4">
+                      <button className="btn btn-sm btn-link text-danger p-0" onClick={() => onOpenModal('Eliminar Integrante', 'confirm-delete', { item: int.nombre }, () => setIntegrantes(integrantes.filter(i => i.id !== int.id)))}><i className="bi bi-trash fs-5"></i></button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -440,7 +441,8 @@ const ResidenteMiDomicilio = ({ onOpenModal }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const ResidentePagos = ({ onOpenModal }) => (
   <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
@@ -495,42 +497,46 @@ const ResidentePagos = ({ onOpenModal }) => (
   </div>
 );
 
-const ResidenteVisitas = ({ onOpenModal }) => (
-  <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
-    <div className="col-12 d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 gap-3">
-      <h5 className="text-white mb-0">Control de Visitas</h5>
-      <button className="btn btn-premium-unique rounded-pill text-white px-4 py-2 fw-bold shadow-lg" onClick={() => onOpenModal('Autorizar Ingreso', 'form-visita')}>
-        <i className="bi bi-person-check me-2"></i> Autorizar Visita
-      </button>
-    </div>
-    {[
-      { name: "Roberto Sánchez", type: "Familiar", date: "Hoy, 15:00 PM", pin: "8492", icon: "bi-person-heart", color: "info" },
-      { name: "Servicio Técnico Claro", type: "Proveedor", date: "Mañana, 10:00 AM", pin: "5103", icon: "bi-tools", color: "warning" }
-    ].map((v, i) => (
-      <div className="col-lg-6" key={i}>
-        <div className="service-card-elite p-4 h-100 d-flex position-relative align-items-center">
-          <div className={`d-flex align-items-center justify-content-center rounded-4 me-4 bg-${v.color} bg-opacity-10 text-${v.color} border border-${v.color} border-opacity-25 shadow-sm`} style={{ width: '70px', height: '70px' }}>
-            <i className={`bi ${v.icon} fs-1`}></i>
-          </div>
-          <div className="flex-grow-1">
-            <div className="d-flex justify-content-between align-items-center mb-1">
-              <h5 className="text-white fw-bold mb-0">{v.name}</h5>
-              <span className="badge bg-secondary bg-opacity-25 text-white-50 rounded-pill">{v.type}</span>
+const ResidenteVisitas = ({ onOpenModal }) => {
+  const [visitas, setVisitas] = useState([
+    { id: 1, name: "Roberto Sánchez", type: "Familiar", date: "Hoy, 15:00 PM", pin: "8492", icon: "bi-person-heart", color: "info" },
+    { id: 2, name: "Servicio Técnico Claro", type: "Proveedor", date: "Mañana, 10:00 AM", pin: "5103", icon: "bi-tools", color: "warning" }
+  ]);
+
+  return (
+    <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
+      <div className="col-12 d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 gap-3">
+        <h5 className="text-white mb-0">Control de Visitas</h5>
+        <button className="btn btn-premium-unique rounded-pill text-white px-4 py-2 fw-bold shadow-lg" onClick={() => onOpenModal('Autorizar Ingreso', 'form-visita', null, (nuevaVisita) => setVisitas([...visitas, nuevaVisita]))}>
+          <i className="bi bi-person-check me-2"></i> Autorizar Visita
+        </button>
+      </div>
+      {visitas.map((v) => (
+        <div className="col-lg-6" key={v.id}>
+          <div className="service-card-elite p-4 h-100 d-flex position-relative align-items-center">
+            <div className={`d-flex align-items-center justify-content-center rounded-4 me-4 bg-${v.color} bg-opacity-10 text-${v.color} border border-${v.color} border-opacity-25 shadow-sm`} style={{ width: '70px', height: '70px' }}>
+              <i className={`bi ${v.icon} fs-1`}></i>
             </div>
-            <p className="text-white-50 small mb-2"><i className="bi bi-clock me-1"></i> {v.date}</p>
-            <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-25">
-              <div className="d-flex align-items-center gap-2">
-                <small className="text-white-50 text-uppercase tracking-widest" style={{ fontSize: '0.7rem' }}>PIN DE ACCESO:</small>
-                <span className="badge bg-light text-dark fs-6 font-monospace">{v.pin}</span>
+            <div className="flex-grow-1">
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <h5 className="text-white fw-bold mb-0">{v.name}</h5>
+                <span className="badge bg-secondary bg-opacity-25 text-white-50 rounded-pill">{v.type}</span>
               </div>
-              <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onOpenModal('Cancelar Visita', 'confirm-delete', { item: v.name })}><i className="bi bi-x-circle"></i></button>
+              <p className="text-white-50 small mb-2"><i className="bi bi-clock me-1"></i> {v.date}</p>
+              <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-25">
+                <div className="d-flex align-items-center gap-2">
+                  <small className="text-white-50 text-uppercase tracking-widest" style={{ fontSize: '0.7rem' }}>PIN DE ACCESO:</small>
+                  <span className="badge bg-light text-dark fs-6 font-monospace">{v.pin}</span>
+                </div>
+                <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => onOpenModal('Cancelar Visita', 'confirm-delete', { item: v.name }, () => setVisitas(visitas.filter(item => item.id !== v.id)))}><i className="bi bi-x-circle"></i></button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 const ResidenteReservas = ({ onOpenModal }) => (
   <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
@@ -800,9 +806,9 @@ const Dashboard = () => {
   }, [activeMenu]);
 
   // --- SISTEMA INTELIGENTE DE MODALES CRUD ---
-  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', type: '', data: null });
-  const openModal = (title, type, data = null) => setModalConfig({ isOpen: true, title, type, data });
-  const closeModal = () => setModalConfig({ isOpen: false, title: '', type: '', data: null });
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
+  const openModal = (title, type, data = null, onConfirm = null) => setModalConfig({ isOpen: true, title, type, data, onConfirm });
+  const closeModal = () => setModalConfig({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
 
   // Estilo Premium para todos los inputs del modal
   const modalInputStyle = {
@@ -867,7 +873,7 @@ const Dashboard = () => {
           {/* Botones simétricos más altos y proporcionales */}
           <div className="d-flex justify-content-center gap-3">
             <button className="btn btn-outline-secondary rounded-pill py-3 fw-bold text-white hover-cyan transition-all flex-grow-1" onClick={closeModal} style={{ background: 'rgba(255,255,255,0.05)' }}>Cancelar</button>
-            <button className={`btn btn-${action.btn} rounded-pill py-3 fw-bold shadow-lg flex-grow-1 text-${(action.btn === 'info' || action.btn === 'warning') ? 'dark' : 'white'}`} onClick={closeModal} style={{ boxShadow: `0 10px 20px rgba(${rgbColor}, 0.2)` }}>{action.text}</button>
+            <button className={`btn btn-${action.btn} rounded-pill py-3 fw-bold shadow-lg flex-grow-1 text-${(action.btn === 'info' || action.btn === 'warning') ? 'dark' : 'white'}`} onClick={() => { if (modalConfig.onConfirm) modalConfig.onConfirm(); closeModal(); }} style={{ boxShadow: `0 10px 20px rgba(${rgbColor}, 0.2)` }}>{action.text}</button>
           </div>
         </div>
       );
@@ -875,15 +881,25 @@ const Dashboard = () => {
 
     if (modalConfig.type === 'form-integrante') {
       return (
-        <form>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre Completo</label><input type="text" className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Camila Mendoza" /></div>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const nombre = formData.get('nombre');
+          const rol = formData.get('rol');
+          if (nombre && rol && modalConfig.onConfirm) {
+            const iniciales = nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            modalConfig.onConfirm({ id: Date.now(), nombre, rol, iniciales, color: '#00d4ff' });
+            closeModal();
+          }
+        }}>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre Completo</label><input type="text" name="nombre" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Camila Mendoza" /></div>
           <div className="row g-3 mb-4">
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Parentesco</label><input type="text" className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Hija" /></div>
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Teléfono (Opcional)</label><input type="text" className="form-control shadow-none" style={modalInputStyle} placeholder="+51..." /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Parentesco</label><input type="text" name="rol" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Hija" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Teléfono (Opcional)</label><input type="text" name="telefono" className="form-control shadow-none" style={modalInputStyle} placeholder="+51..." /></div>
           </div>
           <div className="d-flex justify-content-end gap-3 mt-5 pt-4 border-top border-secondary border-opacity-25">
             <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
-            <button type="button" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg" onClick={closeModal}>Guardar Integrante</button>
+            <button type="submit" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg">Guardar Integrante</button>
           </div>
         </form>
       );
@@ -891,12 +907,40 @@ const Dashboard = () => {
 
     if (modalConfig.type === 'form-visita') {
       return (
-        <form>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre o Empresa del Visitante</label><input type="text" className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Roberto Sánchez / Empresa Delivery" /></div>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const name = formData.get('name');
+          const typeCode = formData.get('type');
+          const date = formData.get('date');
+          const time = formData.get('time');
+
+          if (name && date && time && modalConfig.onConfirm) {
+            // Configurar diseño dependiendo del tipo
+            let typeStr = "Familiar"; let icon = "bi-person-heart"; let color = "info";
+            if (typeCode === 'prov') { typeStr = "Proveedor"; icon = "bi-tools"; color = "warning"; }
+            if (typeCode === 'del') { typeStr = "Delivery"; icon = "bi-box-seam"; color = "success"; }
+            
+            // Generar un PIN aleatorio de 4 dígitos
+            const pin = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            modalConfig.onConfirm({
+              id: Date.now(),
+              name,
+              type: typeStr,
+              date: `${date} • ${time}`,
+              pin,
+              icon,
+              color
+            });
+            closeModal();
+          }
+        }}>
+          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre o Empresa del Visitante</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} placeholder="Ej. Roberto Sánchez / Empresa Delivery" /></div>
           <div className="row g-3 mb-4">
-            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>DNI / Pasaporte</label><input type="text" className="form-control shadow-none" style={modalInputStyle} placeholder="Nro. Documento" /></div>
+            <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>DNI / Pasaporte</label><input type="text" name="dni" className="form-control shadow-none" style={modalInputStyle} placeholder="Nro. Documento" /></div>
             <div className="col-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Tipo de Visita</label>
-              <select className="form-select shadow-none py-2" style={modalInputStyle}>
+              <select name="type" className="form-select shadow-none py-2" style={modalInputStyle}>
                 <option value="fam">Familiar / Amigo</option>
                 <option value="prov">Proveedor / Técnico</option>
                 <option value="del">Delivery</option>
@@ -908,20 +952,20 @@ const Dashboard = () => {
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Fecha</label>
               <div className="position-relative">
                 <i className="bi bi-calendar-event position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="date" className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} min={today} />
+                <input type="date" name="date" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} min={today} />
               </div>
             </div>
             <div className="col-6">
               <label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Hora Estimada</label>
               <div className="position-relative">
                 <i className="bi bi-clock position-absolute top-50 start-0 translate-middle-y ms-3 text-info fs-5"></i>
-                <input type="time" className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} />
+                <input type="time" name="time" required className="form-control shadow-none date-time-premium" style={{...modalInputStyle, paddingLeft: '45px'}} />
               </div>
             </div>
           </div>
           <div className="d-flex justify-content-end gap-3 mt-5 pt-4 border-top border-secondary border-opacity-25">
             <button type="button" className="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" onClick={closeModal}>Cancelar</button>
-            <button type="button" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg" onClick={closeModal}><i className="bi bi-person-check-fill me-2"></i>Autorizar Ingreso</button>
+            <button type="submit" className="btn btn-premium-unique text-white rounded-pill px-4 py-2 fw-bold shadow-lg"><i className="bi bi-person-check-fill me-2"></i>Autorizar Ingreso</button>
           </div>
         </form>
       );
