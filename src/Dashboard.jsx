@@ -1365,6 +1365,7 @@ const Dashboard = () => {
   const userEmail = location.state?.userEmail || 'usuario@domus.com';
   
   const [activeTab, setActiveTab] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Evitamos el scroll global para que el Sidebar se sienta fijo como una App nativa
   useEffect(() => {
@@ -2267,8 +2268,14 @@ const Dashboard = () => {
 
   return (
     <div className="d-flex position-relative w-100">
+      
+      {/* Overlay Oscuro para Menú Móvil */}
+      {isMobileMenuOpen && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark d-lg-none" style={{ zIndex: 1040, opacity: 0.7, backdropFilter: 'blur(3px)', transition: 'opacity 0.3s ease' }} onClick={() => setIsMobileMenuOpen(false)}></div>
+      )}
+
       {/* Menú Lateral Fijo (Sidebar) */}
-      <aside className="dashboard-sidebar p-4 d-flex flex-column">
+      <aside className={`dashboard-sidebar p-4 d-flex flex-column ${isMobileMenuOpen ? 'show' : ''}`}>
         <div className="d-flex align-items-center mb-5">
           <div className="d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg, #0056b3, #00d4ff)', borderRadius: '12px', transform: 'rotate(45deg)' }}>
             <i className="bi bi-buildings-fill text-white" style={{ transform: 'rotate(-45deg)', fontSize: '1.2rem' }}></i>
@@ -2282,7 +2289,7 @@ const Dashboard = () => {
             <button 
               className={`sidebar-link border-0 w-100 text-start bg-transparent ${activeTab === item.text ? 'active' : ''}`} 
               key={i}
-              onClick={() => setActiveTab(item.text)}
+              onClick={() => { setActiveTab(item.text); setIsMobileMenuOpen(false); }}
             >
               <i className={`bi ${item.icon} fs-5 me-3`}></i> {item.text}
             </button>
@@ -2315,7 +2322,9 @@ const Dashboard = () => {
             <i className="bi bi-buildings-fill text-info fs-3 me-2"></i>
             <span className="fw-bold text-white fs-5">DOMUS</span>
           </div>
-          <Link to="/" className="text-white-50"><i className="bi bi-x-lg fs-1"></i></Link>
+          <button className="btn btn-link text-white-50 p-0 hover-cyan" onClick={() => setIsMobileMenuOpen(true)}>
+            <i className="bi bi-list fs-1"></i>
+          </button>
         </div>
 
         {/* Cabecera del Contenido */}
@@ -2345,26 +2354,24 @@ const Dashboard = () => {
 
       {/* MODAL INTELIGENTE GLOBAL */}
       {modalConfig.isOpen && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ zIndex: 9999, background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(12px)' }}>
-          <div className="card border-0 p-0 shadow-lg position-relative overflow-hidden" style={{ background: '#0f172a', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '28px', width: '90%', maxWidth: '550px', animation: 'fadeInDown 0.4s cubic-bezier(0.23, 1, 0.32, 1)' }}>
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3" style={{ zIndex: 9999, background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(12px)' }}>
+          <div className="card border-0 p-0 shadow-lg position-relative d-flex flex-column overflow-hidden" style={{ background: '#0f172a', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '28px', width: '100%', maxWidth: '550px', maxHeight: '90vh', animation: 'fadeInDown 0.4s cubic-bezier(0.23, 1, 0.32, 1)' }}>
             
             {/* Glow decorativo */}
             <div className="position-absolute top-0 start-50 translate-middle rounded-circle" style={{ width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%)', zIndex: 0 }}></div>
             
-            <div className="position-relative" style={{ zIndex: 1 }}>
-              <div className="d-flex justify-content-between align-items-center p-4 p-md-5 pb-3 pb-md-4 border-bottom border-secondary border-opacity-25">
-                <div className="d-flex align-items-center gap-3">
-                  <div className="d-flex align-items-center justify-content-center rounded-circle" style={{ width: '45px', height: '45px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    <i className={`bi ${modalConfig.type.startsWith('confirm') ? 'bi-shield-exclamation' : 'bi-ui-checks'} text-info fs-5`}></i>
-                  </div>
-                  <h4 className="text-white fw-bold mb-0">{modalConfig.title}</h4>
+            <div className="d-flex justify-content-between align-items-center p-4 p-md-5 pb-3 pb-md-4 border-bottom border-secondary border-opacity-25 flex-shrink-0" style={{ zIndex: 1 }}>
+              <div className="d-flex align-items-center gap-3 overflow-hidden">
+                <div className="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style={{ width: '45px', height: '45px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <i className={`bi ${modalConfig.type.startsWith('confirm') ? 'bi-shield-exclamation' : 'bi-ui-checks'} text-info fs-5`}></i>
                 </div>
-                <button className="btn btn-link text-white-50 p-0 hover-cyan transition-all" onClick={closeModal} style={{ transform: 'scale(1.2)' }}><i className="bi bi-x"></i></button>
+                <h4 className="text-white fw-bold mb-0 text-truncate">{modalConfig.title}</h4>
               </div>
+              <button className="btn btn-link text-white-50 p-0 hover-cyan transition-all flex-shrink-0 ms-2" onClick={closeModal} style={{ transform: 'scale(1.2)' }}><i className="bi bi-x"></i></button>
+            </div>
               
-              <div className="p-4 p-md-5 pt-4">
-                {renderModalBody()}
-              </div>
+            <div className="p-4 p-md-5 pt-4 overflow-auto flex-grow-1" style={{ zIndex: 1 }}>
+              {renderModalBody()}
             </div>
           </div>
         </div>
