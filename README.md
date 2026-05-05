@@ -38,13 +38,33 @@ El sistema cuenta con una arquitectura Multi-Rol que adapta la interfaz y las fu
 
 ## 🚀 Tecnologías Utilizadas
 
+A continuación se detallan las tecnologías principales junto con el comando exacto para instalarlas de forma individual desde la terminal:
+
 - **Frontend Core:** React.js, React Router DOM v6
+  ```bash
+  npm install react-router-dom
+  ```
 - **Estilos & UI:** Bootstrap 5, CSS3 Custom (Glassmorphism, CSS Variables)
+  ```bash
+  npm install bootstrap
+  ```
 - **Iconografía:** Bootstrap Icons
+  ```bash
+  npm install bootstrap-icons
+  ```
 - **Animaciones:** AOS (Animate On Scroll), CSS Keyframes
+  ```bash
+  npm install aos
+  ```
 - **Componentes Extra:** 
   - `react-slick` & `slick-carousel` (Carrusel interactivo avanzado)
+    ```bash
+    npm install react-slick slick-carousel
+    ```
   - `jspdf` & `jspdf-autotable` (Generación de documentos PDF)
+    ```bash
+    npm install jspdf jspdf-autotable
+    ```
 
 ---
 
