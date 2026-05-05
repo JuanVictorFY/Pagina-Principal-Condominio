@@ -13,9 +13,10 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Inicio', link: '/' },
-    { name: 'Servicios', link: '/#servicios' },
+    { name: 'Módulos', link: '/#features' },
     { name: 'Planes', link: '/#planes' },
-    { name: 'Contacto', link: '/#contacto' }
+    { name: 'Nosotros', link: '/#about' },
+    { name: 'FAQ', link: '/#faq' }
   ];
 
   return (
@@ -51,14 +52,14 @@ const Navbar = () => {
           <ul className="navbar-nav gap-lg-3 text-center my-3 my-lg-0">
             {navItems.map((item) => (
               <li className="nav-item" key={item.name}>
-                <a 
+                <Link 
                   className="nav-link text-white opacity-75 fw-medium custom-nav-link" 
-                  href={item.link} 
+                  to={item.link} 
                   style={navLinkStyle}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

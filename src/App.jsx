@@ -10,10 +10,18 @@ import './App.css';
 function App() {
   const location = useLocation();
 
-  // Restablece el scroll arriba cada vez que cambiamos de página
+  // Controla el scroll general y los enlaces con hash (#)
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    if (location.hash) {
+      const element = document.getElementById(location.hash.substring(1));
+      if (element) {
+        // Usamos setTimeout corto para dar tiempo a que React renderice si venimos desde Login
+        setTimeout(() => element.scrollIntoView({ behavior: 'smooth' }), 50);
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location]);
 
   useEffect(() => {
     AOS.init({

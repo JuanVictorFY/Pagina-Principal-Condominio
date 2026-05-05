@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -29,21 +31,20 @@ const Footer = () => {
           <div className="col-lg-2 col-md-6">
             <h6 className="text-white fw-bold mb-4">Navegación</h6>
             <ul className="list-unstyled">
-            <li className="mb-2"><a href="/" className="text-white-50 text-decoration-none hover-cyan">Inicio</a></li>
-            <li className="mb-2"><a href="/#servicios" className="text-white-50 text-decoration-none hover-cyan">Servicios</a></li>
-            <li className="mb-2"><a href="/#planes" className="text-white-50 text-decoration-none hover-cyan">Planes</a></li>
-            <li className="mb-2"><a href="/#contacto" className="text-white-50 text-decoration-none hover-cyan">Contacto</a></li>
+            <li className="mb-2"><Link to="/" className="text-white-50 text-decoration-none hover-cyan">Inicio</Link></li>
+            <li className="mb-2"><a href="/#features" className="text-white-50 text-decoration-none hover-cyan">Módulos SaaS</a></li>
+            <li className="mb-2"><a href="/#planes" className="text-white-50 text-decoration-none hover-cyan">Tarifas y Planes</a></li>
+            <li className="mb-2"><a href="/#contacto" className="text-white-50 text-decoration-none hover-cyan">Contacto de Ventas</a></li>
             </ul>
           </div>
 
-          {/* COLUMNA 3: Servicios */}
+          {/* COLUMNA 3: Empresa */}
           <div className="col-lg-3 col-md-6">
-            <h6 className="text-white fw-bold mb-4">Soluciones</h6>
-            <ul className="list-unstyled text-white-50">
-              <li className="mb-2">Control de Accesos</li>
-              <li className="mb-2">Gestión Financiera</li>
-              <li className="mb-2">Reserva de Áreas</li>
-              <li className="mb-2">Seguridad Inteligente</li>
+            <h6 className="text-white fw-bold mb-4">La Empresa</h6>
+            <ul className="list-unstyled">
+              <li className="mb-2"><a href="/#about" className="text-white-50 text-decoration-none hover-cyan">Sobre Nosotros</a></li>
+              <li className="mb-2"><a href="/#faq" className="text-white-50 text-decoration-none hover-cyan">Preguntas Frecuentes</a></li>
+              <li className="mb-2"><Link to="/login" className="text-white-50 text-decoration-none hover-cyan">Portal de Clientes</Link></li>
             </ul>
           </div>
 

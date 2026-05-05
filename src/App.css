@@ -379,6 +379,23 @@ body:has(.navbar-collapse.show) .hero-inner-content {
 }
 
 /* ==========================================================================
+   NOTIFICACIONES FLOTANTES (MODULOS SAAS)
+   ========================================================================== */
+@keyframes float-up-down {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+.floating-badge {
+  animation: float-up-down 4s ease-in-out infinite;
+}
+
+.feature-image-wrapper:hover {
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.15);
+}
+
+/* ==========================================================================
    SISTEMA DE RESPONSIVIDAD INTEGRAL Y FLUIDO
    ========================================================================== */
 
