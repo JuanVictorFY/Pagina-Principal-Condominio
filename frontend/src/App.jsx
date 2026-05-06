@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Home from './Home';
 import Login from './Login';
 import Dashboard from './Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -41,7 +42,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
 
       {!isDashboard && <Footer />}

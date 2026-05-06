@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -8,7 +9,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -20,21 +21,26 @@ const Login = () => {
       return;
     }
 
-    // 2. Simular llamada a la base de datos (1.5 segundos)
-    setTimeout(() => {
-      let role = null;
-      if (email === 'admin@domus.com' && password === '123') role = 'admin';
-      else if (email === 'residente@domus.com' && password === '123') role = 'residente';
-      else if (email === 'seguridad@domus.com' && password === '123') role = 'seguridad';
+    try {
+      // 2. Llamada real al backend con Axios
+      const response = await axios.post('http://localhost:3000/api/auth/login', {
+        email: email,
+        password: password
+      });
 
-      if (role) {
-        // ¡Logeo exitoso! Pasamos el rol detectado a la ruta del dashboard
-        navigate('/dashboard', { state: { role: role, userEmail: email } }); 
-      } else {
-        setError('Correo o contraseña incorrectos. Inténtalo de nuevo.');
-      }
+      // 3. Extraer el token y los datos del usuario de la respuesta
+      const { token, user } = response.data;
+      localStorage.setItem('domus_token', token);
+      localStorage.setItem('domus_user', JSON.stringify(user));
+
+      // 4. Redirigir al dashboard con los datos del usuario
+      navigate('/dashboard', { state: { role: user.role, userEmail: user.email } }); 
+    } catch (err) {
+      console.error("Error al iniciar sesión:", err);
+      setError(err.response?.data?.message || "Error al conectar con el servidor.");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
