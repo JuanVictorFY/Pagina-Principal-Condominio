@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import api from './services/api';
 
 // Configuración de los menús laterales según el rol
 const menus = {
@@ -381,13 +383,35 @@ const AdminFinanzas = ({ onOpenModal, morosos, setMorosos }) => {
   );
 };
 
-const AdminDirectorio = ({ onOpenModal, residents, setResidents }) => {
+const AdminDirectorio = ({ onOpenModal, residents, setResidents, onCreateResident, onEditResident, onDeleteResident, isLoading, error }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredResidents = residents.filter(r => 
-    r.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    r.depto.toLowerCase().includes(searchTerm.toLowerCase())
+    (r.name && r.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
+    (r.depto && r.depto.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-5 vh-50 d-flex flex-column justify-content-center align-items-center">
+        <div className="spinner-border text-info" role="status" style={{ width: '3rem', height: '3rem' }}>
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+        <p className="text-white-50 mt-3 fs-5">Cargando directorio de usuarios...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger bg-transparent border-danger text-danger text-center p-4">
+        <i className="bi bi-exclamation-triangle-fill me-2 fs-4"></i> 
+        <strong className="me-2">Error al cargar datos:</strong> 
+        {error}
+        <p className="mt-2 small mb-0">Por favor, recargue la página o contacte a soporte si el problema persiste.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="row g-4" style={{ animation: 'fadeInDown 0.5s ease' }}>
@@ -398,24 +422,25 @@ const AdminDirectorio = ({ onOpenModal, residents, setResidents }) => {
             <span className="input-group-text bg-transparent border-secondary border-opacity-25 text-white-50"><i className="bi bi-search"></i></span>
             <input type="text" className="form-control bg-transparent border-secondary border-opacity-25 text-white shadow-none" placeholder="Buscar por nombre o dpto..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
-          <button className="btn btn-outline-info rounded-pill px-4 py-2 fw-bold w-100 w-sm-auto text-nowrap" onClick={() => onOpenModal('Registrar Nuevo Residente', 'form-residente', null, (newRes) => setResidents(prev => [...prev, newRes]))}><i className="bi bi-person-plus me-2"></i> Nuevo Residente</button>
+          <button className="btn btn-outline-info rounded-pill px-4 py-2 fw-bold w-100 w-sm-auto text-nowrap" onClick={() => onOpenModal('Registrar Nuevo Residente', 'form-residente', null, (newRes) => onCreateResident(newRes))}><i className="bi bi-person-plus me-2"></i> Nuevo Residente</button>
         </div>
       </div>
       {filteredResidents.length > 0 ? filteredResidents.map((r) => (
         <div className="col-xl-4 col-md-6" key={r.id}>
           <div className="service-card-elite p-4 h-100 d-flex flex-column align-items-center text-center shadow-sm">
-            <div className="avatar-circle mb-3 shadow-lg" style={{ width: '65px', height: '65px', fontSize: '1.6rem' }}>{r.name.charAt(0)}</div>
+            <div className="avatar-circle mb-3 shadow-lg" style={{ width: '65px', height: '65px', fontSize: '1.6rem' }}>{r.name ? r.name.charAt(0) : '?'}</div>
             <h5 className="text-white fw-bold mb-1">{r.name}</h5>
-            <span className="badge bg-secondary bg-opacity-25 text-white-50 rounded-pill mb-3 px-3">Dpto {r.depto}</span>
+            <span className="badge bg-secondary bg-opacity-25 text-white-50 rounded-pill mb-1 px-3">Dpto {r.depto || 'N/A'}</span>
+            <small className="text-info mb-3">{r.email || 'Sin correo'}</small>
             <div className="mt-auto w-100">
               <div className="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-3 mt-2 mb-3">
-                <small className="text-white-50 hover-cyan"><i className="bi bi-telephone me-1"></i> {r.phone}</small>
+                <small className="text-white-50 hover-cyan"><i className="bi bi-telephone me-1"></i> {r.phone || 'No registrado'}</small>
                 <span className={`badge bg-${r.color} bg-opacity-25 text-${r.color} border border-${r.color} border-opacity-50 rounded-pill`}>{r.status}</span>
               </div>
               {/* BOTONES CRUD: EDITAR Y BORRAR */}
               <div className="d-flex gap-2 w-100">
-                <button className="btn btn-sm btn-outline-info flex-grow-1 rounded-pill fw-bold" onClick={() => onOpenModal('Editar Perfil', 'form-residente', r, (updatedRes) => setResidents(prev => prev.map(res => res.id === r.id ? updatedRes : res)))}><i className="bi bi-pencil-square me-1"></i> Editar</button>
-                <button className="btn btn-sm btn-outline-danger rounded-pill px-3" title="Eliminar Residente" onClick={() => onOpenModal('Eliminar Residente', 'confirm-delete', { item: r.name }, () => setResidents(prev => prev.filter(res => res.id !== r.id)))}><i className="bi bi-trash"></i></button>
+                <button className="btn btn-sm btn-outline-info flex-grow-1 rounded-pill fw-bold" onClick={() => onOpenModal('Editar Perfil', 'form-residente', r, (updatedRes) => onEditResident(updatedRes))}><i className="bi bi-pencil-square me-1"></i> Editar</button>
+                <button className="btn btn-sm btn-outline-danger rounded-pill px-3" title="Eliminar Residente" onClick={() => onOpenModal('Eliminar Residente', 'confirm-delete', { item: r.name }, () => onDeleteResident(r.id))}><i className="bi bi-trash"></i></button>
               </div>
             </div>
           </div>
@@ -718,11 +743,76 @@ const AdminDashboard = ({ activeTab, onOpenModal }) => {
     { id: 1, residente: 'Carlos Mendoza', iniciales: 'CM', unidad: 'Dpto 801', deuda: '$300.00' },
     { id: 2, residente: 'Ana Ríos', iniciales: 'AR', unidad: 'Dpto 305', deuda: '$150.00' }
   ]);
-  const [residents, setResidents] = useState([
-    { id: 1, name: "Juan Pérez", depto: "402", phone: "+51 999 123 456", status: "Al Día", color: "success" },
-    { id: 2, name: "Carlos Mendoza", depto: "801", phone: "+51 987 654 321", status: "Moroso", color: "danger" },
-    { id: 3, name: "Laura Giraldo", depto: "105", phone: "+51 955 444 333", status: "Al Día", color: "success" }
-  ]);
+  const [residents, setResidents] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [usersError, setUsersError] = useState('');
+
+  useEffect(() => {
+    // Solo hacemos la llamada si la pestaña activa es la del directorio
+    // y si aún no se han cargado los datos (para no recargar innecesariamente)
+    if (activeTab === 'Directorio Residentes' && residents.length === 0) {
+      const fetchUsers = async () => {
+        try {
+          setIsLoadingUsers(true);
+          setUsersError('');
+          const response = await api.get('/users');
+          // Adaptamos los datos del backend a la estructura que espera el componente
+          const adaptedUsers = response.data.map(user => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            depto: user.depto,
+            phone: user.phone,
+            role: user.role,
+            status: "Al Día", // Placeholder hasta tener finanzas
+            color: "success"  // Placeholder
+          }));
+          setResidents(adaptedUsers);
+        } catch (err) {
+          console.error("Error al cargar usuarios:", err);
+          setUsersError(err.response?.data?.message || 'No se pudo cargar el directorio.');
+        } finally {
+          setIsLoadingUsers(false);
+        }
+      };
+      fetchUsers();
+    }
+  }, [activeTab, residents.length]); // Se ejecuta si cambia la pestaña o si la lista de residentes se vacía
+
+  // --- FUNCIONES CRUD PARA EL BACKEND ---
+  const handleCreateResident = async (formData) => {
+    try {
+      // Para el demo, el password por defecto es '123'
+      await api.post('/auth/register', { 
+        ...formData, 
+        password: '123',
+        role: 'RESIDENTE' 
+      });
+      // Forzamos la recarga limpiando el estado
+      setResidents([]); 
+    } catch (err) {
+      alert(err.response?.data?.message || "Error al crear el residente");
+    }
+  };
+
+  const handleEditResident = async (updatedRes) => {
+    try {
+      await api.put(`/users/${updatedRes.id}`, updatedRes);
+      setResidents(prev => prev.map(res => res.id === updatedRes.id ? updatedRes : res));
+    } catch (err) {
+      alert(err.response?.data?.message || "Error al actualizar el residente");
+    }
+  };
+
+  const handleDeleteResident = async (userId) => {
+    try {
+      await api.delete(`/users/${userId}`);
+      setResidents(prev => prev.filter(r => r.id !== userId));
+    } catch (err) {
+      alert("No se pudo eliminar al usuario.");
+    }
+  };
+
   const [comunicados, setComunicados] = useState([
     { id: 1, title: "Corte de Agua Programado", date: "15 Nov, 2023", scope: "Torre B", type: "warning", desc: "Se realizará mantenimiento preventivo en las bombas de agua desde las 10:00 AM hasta las 14:00 PM." },
     { id: 2, title: "Nueva Política de Mascotas", date: "10 Nov, 2023", scope: "Todos", type: "info", desc: "Se ha actualizado el reglamento interno respecto al tránsito de mascotas en áreas comunes. Por favor revisar el PDF adjunto." }
@@ -739,7 +829,7 @@ const AdminDashboard = ({ activeTab, onOpenModal }) => {
 
   switch (activeTab) {
     case 'Finanzas y Cobros': return <AdminFinanzas onOpenModal={onOpenModal} morosos={morosos} setMorosos={setMorosos} />;
-    case 'Directorio Residentes': return <AdminDirectorio onOpenModal={onOpenModal} residents={residents} setResidents={setResidents} />;
+    case 'Directorio Residentes': return <AdminDirectorio onOpenModal={onOpenModal} residents={residents} setResidents={setResidents} onCreateResident={handleCreateResident} onEditResident={handleEditResident} onDeleteResident={handleDeleteResident} isLoading={isLoadingUsers} error={usersError} />;
     case 'Comunicados': return <AdminComunicados onOpenModal={onOpenModal} comunicados={comunicados} setComunicados={setComunicados} />;
     case 'Gestión de Áreas': return <AdminAreas onOpenModal={onOpenModal} areas={areas} setAreas={setAreas} />;
     case 'Mantenimiento': return <AdminMantenimiento onOpenModal={onOpenModal} tickets={tickets} setTickets={setTickets} />;
@@ -1358,24 +1448,40 @@ const SeguridadDashboard = ({ activeTab, onOpenModal }) => {
 
 const Dashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   
-  // Recuperamos el rol del login (si entra directo sin login, por defecto será 'admin')
-  const role = location.state?.role || 'admin';
-  const userEmail = location.state?.userEmail || 'usuario@domus.com';
+  // Lógica mejorada para obtener el usuario, persistiendo en recargas de página
+  const getInitialUser = () => {
+    // Prioridad al state que viene de la navegación del Login
+    if (location.state?.role) {
+      return { role: location.state.role, email: location.state.userEmail };
+    }
+    // Fallback a localStorage para recargas de página
+    const storedUser = localStorage.getItem('domus_user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      return { role: parsedUser.role, email: parsedUser.email };
+    }
+    // Si no se encuentra nada, se devolverán nulos
+    return { role: null, email: null };
+  };
+
+  const { role, userEmail } = getInitialUser();
 
   const activeMenu = menus[role] || menus.admin;
   
   const [activeTab, setActiveTab] = useState(activeMenu[0]?.text || '');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Evitamos el scroll global para que el Sidebar se sienta fijo como una App nativa
   useEffect(() => {
     document.body.style.overflow = 'auto';
   }, []);
 
-  // Inicializar el tab activo con la primera opción del menú correspondiente
-  useEffect(() => {
-  }, [activeMenu]);
+  const handleLogout = () => {
+    localStorage.removeItem('domus_token');
+    localStorage.removeItem('domus_user');
+    navigate('/login');
+  };
 
   // --- SISTEMA INTELIGENTE DE MODALES CRUD ---
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
@@ -1390,6 +1496,12 @@ const Dashboard = () => {
     setFileName(''); // Limpiar archivo al cerrar
     setModalConfig({ isOpen: false, title: '', type: '', data: null, onConfirm: null });
   };
+
+  // Si no hay rol, el componente ProtectedRoute ya debería haber redirigido.
+  // Esto es un seguro extra por si algo falla.
+  if (!role) {
+    return <Navigate to="/login" replace />;
+  }
 
   // Estilo Premium para todos los inputs del modal
   const modalInputStyle = {
@@ -1719,12 +1831,14 @@ const Dashboard = () => {
           e.preventDefault();
           const formData = new FormData(e.target);
           const name = formData.get('name');
+          const email = formData.get('email');
           const depto = formData.get('depto');
           const phone = formData.get('phone');
-          if (name && modalConfig.onConfirm) {
+          if (name && email && modalConfig.onConfirm) {
             modalConfig.onConfirm({ 
               id: modalConfig.data?.id || Date.now(), 
               name, 
+              email,
               depto: depto || 'N/A', 
               phone: phone || "No registrado",
               status: modalConfig.data?.status || "Al Día", 
@@ -1733,7 +1847,10 @@ const Dashboard = () => {
             closeModal();
           }
         }}>
-          <div className="mb-4"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre Completo</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.name || ''} placeholder="Ej. Juan Pérez" /></div>
+          <div className="row g-3 mb-4">
+            <div className="col-12 col-sm-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Nombre Completo</label><input type="text" name="name" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.name || ''} placeholder="Ej. Juan Pérez" /></div>
+            <div className="col-12 col-sm-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Correo Electrónico</label><input type="email" name="email" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.email || ''} placeholder="correo@ejemplo.com" /></div>
+          </div>
           <div className="row g-3 mb-4">
             <div className="col-12 col-sm-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Departamento</label><input type="text" name="depto" required className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.depto || ''} placeholder="Ej. 402" /></div>
             <div className="col-12 col-sm-6"><label className="text-info small fw-bold mb-2 text-uppercase" style={{ letterSpacing: '1px' }}>Teléfono</label><input type="text" name="phone" className="form-control shadow-none" style={modalInputStyle} defaultValue={modalConfig.data?.phone || ''} placeholder="+51 999 888 777" /></div>
@@ -2301,9 +2418,9 @@ const Dashboard = () => {
               <small className="text-white-50 text-truncate d-block" style={{ fontSize: '0.75rem' }}>{userEmail}</small>
             </div>
           </div>
-          <Link to="/" className="btn btn-outline-danger w-100 rounded-pill fw-bold">
+          <button onClick={handleLogout} className="btn btn-outline-danger w-100 rounded-pill fw-bold">
             <i className="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-          </Link>
+          </button>
         </div>
       </aside>
 
